@@ -54,22 +54,23 @@ namespace OrangeTraining
 	class PhraseCollection{
 	public:
 		PhraseCollection();
+		~PhraseCollection();
 		//! Add a new phrasePair to the collection
 
 		//methods
 
-		bool AddPhrasePair(const PhrasePair & phrasePair);
+		bool AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
 		//! print all rules in this collection to file
 		bool WritetoFile(std::ofstream &output, std::ofstream &outputinv) const;
-		
+		void Clear();
 		//attributes
 
 		size_t TotalRuleCount() const;
 		size_t NullRuleCount() const;
 	private:
 		std::vector<PhrasePair> m_phraseCollection;
-		size_t totalRuleCount; 
-		size_t nullRuleCount; //! count of Null rule (X ||| NULL) in the collection
+		size_t m_totalRuleCount; 
+		size_t m_nullRuleCount; //! count of Null rule (X ||| NULL) in the collection
 
 	};
 

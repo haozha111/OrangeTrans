@@ -78,9 +78,18 @@ namespace OrangeTraining
 	PhraseCollection::PhraseCollection()
 	{}
 
-	bool PhraseCollection::AddPhrasePair(const PhrasePair &phrasePair)
+	PhraseCollection::~PhraseCollection()
+	{
+		Clear();
+	}
+
+	bool PhraseCollection::AddPhrasePair(const PhrasePair &phrasePair, bool hasEmptyPhrase)
 	{
 		this->m_phraseCollection.push_back(phrasePair);
+		if (hasEmptyPhrase){
+			this->m_nullRuleCount++;
+		}
+		this->m_totalRuleCount++;
 		return true;
 	}
 
@@ -101,14 +110,20 @@ namespace OrangeTraining
 		return true;
 	}
 
+	void PhraseCollection::Clear()
+	{
+		this->m_phraseCollection.clear();
+
+	}
+
 	size_t PhraseCollection::TotalRuleCount() const
 	{
-		return this->totalRuleCount;
+		return this->m_totalRuleCount;
 	}
 
 	size_t PhraseCollection::NullRuleCount() const
 	{
-		return this->nullRuleCount;
+		return this->m_nullRuleCount;
 	}
 
 

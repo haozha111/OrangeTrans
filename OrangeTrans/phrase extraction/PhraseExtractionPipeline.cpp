@@ -33,7 +33,6 @@ namespace OrangeTraining
 	bool PhraseExtractionPipeline::StartPhraseExtraction()
 	{
 		string line_source, line_target, line_alignment;
-		PhraseCollection phraseCollection;
 		size_t sentenceID = 1;
 		RuleOptions ruleOptions = RuleOptions();
 
@@ -47,14 +46,17 @@ namespace OrangeTraining
 			&& getline(targetTrainset, line_target)
 			&& getline(alignment, line_alignment)){
 			//create a new word alignment
+			PhraseCollection phraseCollection;
 			WordAlignment wordAlignment = WordAlignment(line_source, line_target,
 				line_alignment, sentenceID);
 			//extract phrase pairs from this alignment
-			cerr <<  "Processing line No." << sentenceID << endl;
+			//cerr <<  "Processing line No." << sentenceID << endl;
 			PhraseExtractor phraseExtractor = PhraseExtractor(wordAlignment, phraseCollection);
 			phraseExtractor.ExtractPhrasePair(ruleOptions);
 			phraseCollection.WritetoFile(ruleOutputFile, ruleInvertedOutputFile);
 			sentenceID++;
+			//if (sentenceID == 100) break;
+
 		}
 
 		return true;

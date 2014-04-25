@@ -50,11 +50,12 @@ namespace OrangeTraining
 		if (options.isIncludeNullAlign){
 			for each (size_t pos in m_wordAlignment.GetSourceNullAligned()){
 				PhrasePair phrasePair = PhrasePair(pos, pos, 1, 0, m_wordAlignment);
-				AddRule(phrasePair);
+				AddRule(phrasePair, true);
 			}
 
 			for each(size_t pos in m_wordAlignment.GetTargetNullAligned()){
 				PhrasePair phrasePair = PhrasePair(1, 0, pos, pos, m_wordAlignment);
+				AddRule(phrasePair, true);
 			}
 		}
 
@@ -95,7 +96,7 @@ namespace OrangeTraining
 				&& (sourceEnd - phrasePair.SourceEndPos()) <= options.srcMaxNullExpand; ++sourceEnd){
 				//build a new phrase instance
 				PhrasePair newPhrasePair = PhrasePair(sourceStart, sourceEnd, phrasePair.TargetStartPos(), phrasePair.TargetEndPos(), wordAlignment);
-				AddRule(newPhrasePair);
+				AddRule(newPhrasePair, false);
 			}
 		}
 
@@ -104,9 +105,9 @@ namespace OrangeTraining
 
 
 	//!Add a new phrase pair to the collection
-	bool PhraseExtractor::AddRule(PhrasePair &phrasePair) const
+	bool PhraseExtractor::AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const
 	{
-		this->m_phraseCollection.AddPhrasePair(phrasePair);
+		this->m_phraseCollection.AddPhrasePair(phrasePair, hasEmptyRule);
 		return true;
 	}
 

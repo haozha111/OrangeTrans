@@ -55,7 +55,7 @@ namespace OrangeTraining
 		bool ValidateRuleConsistency(PhrasePair &phrasePair,
 			WordAlignment &wordAlignment,
 			RuleOptions &options) const;
-		bool AddRule(PhrasePair &phrasePair) const;
+		bool AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const;
 
 	};
 }

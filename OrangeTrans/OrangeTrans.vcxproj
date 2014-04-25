@@ -122,6 +122,7 @@
     <ClInclude Include="util\BasicMethod.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="phrase extraction\Phrase.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractionPipeline.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractor.cpp" />
