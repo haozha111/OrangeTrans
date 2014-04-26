@@ -42,6 +42,12 @@
     <ClInclude Include="util\BasicMethod.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
+    <ClInclude Include="phrase extraction\LexicalTranslation.h">
+      <Filter>Header Files\phrase extraction</Filter>
+    </ClInclude>
+    <ClInclude Include="phrase extraction\LexicalTransPipeline.h">
+      <Filter>Header Files\phrase extraction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util\BasicMethod.cpp">
@@ -61,6 +67,12 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="phrase extraction\LexicalTranslation.cpp">
+      <Filter>Source Files\phrase extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="phrase extraction\LexicalTransPipeline.cpp">
+      <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

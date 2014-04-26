@@ -64,11 +64,13 @@ namespace OrangeTraining
 
 			phraseCollection.Write(ruleOutput, ruleInvOutput);
 			//cout << clock() - start << endl;
-			if (sentenceID == 100) break;
 			sentenceID++;
-
 		}
-		system("pause");
+		srcTrainset.close();
+		tgtTrainset.close();
+		align.close();
+		ruleOutput.close();
+		ruleInvOutput.close();
 		return true;
 	}
 }

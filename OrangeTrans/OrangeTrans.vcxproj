@@ -115,6 +115,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="phrase extraction\LexicalTranslation.h" />
+    <ClInclude Include="phrase extraction\LexicalTransPipeline.h" />
     <ClInclude Include="phrase extraction\Phrase.h" />
     <ClInclude Include="phrase extraction\PhraseExtractionPipeline.h" />
     <ClInclude Include="phrase extraction\PhraseExtractor.h" />
@@ -123,6 +125,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="phrase extraction\LexicalTranslation.cpp" />
+    <ClCompile Include="phrase extraction\LexicalTransPipeline.cpp" />
     <ClCompile Include="phrase extraction\Phrase.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractionPipeline.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractor.cpp" />
