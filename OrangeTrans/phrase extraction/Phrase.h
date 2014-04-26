@@ -28,14 +28,12 @@ namespace OrangeTraining
 		
 		//method
 
-		
-
 		//atributes
 
-		size_t SourceStartPos() const;
-		size_t SourceEndPos() const;
-		size_t TargetStartPos() const;
-		size_t TargetEndPos() const;
+		size_t SourceStart() const;
+		size_t SourceEnd() const;
+		size_t TargetStart() const;
+		size_t TargetEnd() const;
 		std::string SourcePhrase() const;
 		std::string TargetPhrase() const;
 		const std::vector<std::pair<size_t, size_t> > & AlignInfo() const;
@@ -54,15 +52,13 @@ namespace OrangeTraining
 	class PhraseCollection{
 	public:
 		PhraseCollection();
-		~PhraseCollection();
 		//! Add a new phrasePair to the collection
 
 		//methods
 
-		bool AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
+		void AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
 		//! print all rules in this collection to file
-		bool WritetoFile(std::ofstream &output, std::ofstream &outputinv) const;
-		void Clear();
+		void Write(std::ofstream &output, std::ofstream &outputinv) const;
 		//attributes
 
 		size_t TotalRuleCount() const;

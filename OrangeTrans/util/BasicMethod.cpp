@@ -11,6 +11,7 @@
 **/
 
 #include "BasicMethod.h";
+#include <sstream>
 
 using namespace std;
 
@@ -43,9 +44,15 @@ namespace OrangeTrans
 		return splitted;
 	}
 
-	vector<string> BasicMethod::ConvertStringtoVec(const string &sourceString)
+	vector<string> BasicMethod::Split(const string &stringtoSplit)
 	{
-		return BasicMethod::Split(sourceString, " ");
+		vector<string> res;
+		stringstream sin(stringtoSplit);
+		string word;
+		while (sin >> word) {
+			res.push_back(word);
+		}
+		return res;
 	}
 
 

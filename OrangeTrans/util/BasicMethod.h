@@ -26,8 +26,8 @@ namespace OrangeTrans
 	public:
 		//! split string with delimiter
 		static std::vector<std::string> Split(const std::string &stringtoSplit, const std::string &delimiter);
-		//! convert a sentence to a vector of words
-		static std::vector<std::string> ConvertStringtoVec(const std::string &sourceString);
+		//! convert a sentence to a vector of words, use space to delimit
+		static std::vector<std::string> Split(const std::string &stringtoSplit);
 	};
 }
 

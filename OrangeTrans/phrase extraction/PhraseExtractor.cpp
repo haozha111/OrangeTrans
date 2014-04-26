@@ -25,90 +25,112 @@ namespace OrangeTraining
 	bool PhraseExtractor::ExtractPhrasePair(RuleOptions &options) const
 	{
 		//traverse all possible spans of target phrase
-		size_t targetLength = m_wordAlignment.TargetLength();
-		size_t sourceLength = m_wordAlignment.SourceLength();
-		for (size_t tgtStartPos = 0; tgtStartPos < targetLength; ++tgtStartPos){
-			for (size_t tgtEndPos = tgtStartPos;
-				tgtEndPos < targetLength && (tgtEndPos - tgtStartPos + 1) <= options.tgtMaxLen; ++tgtEndPos){
-				//find the minimally matching foreign phrase
-				size_t srcStartPos = sourceLength;
-				size_t srcEndPos = 0;
-				for (size_t k = tgtStartPos; k <= tgtEndPos; ++k){
-					for (vector<size_t>::const_iterator iter = m_wordAlignment.GetTargetAlignmentAtPos(k).begin();
-						iter != m_wordAlignment.GetTargetAlignmentAtPos(k).end(); ++iter){
-						srcStartPos = (*iter < srcStartPos) ? *iter : srcStartPos;
-						srcEndPos = (*iter > srcStartPos) ? *iter : srcStartPos;
+		size_t tgtlen = m_wordAlignment.TargetLength();
+		size_t srclen = m_wordAlignment.SourceLength();
+		for (size_t tgtstart = 0; tgtstart < tgtlen; ++tgtstart){
+			for (size_t tgtend = tgtstart; tgtend < tgtlen; ++tgtend){
+				//check if exceeds maxlen 
+				if ((tgtend - tgtstart + 1) > options.tgtMaxLen){
+					break;
+				}
+
+				//check both sides of target length to see whether it breaks the rule of tgtMaxNullExp
+				if (tgtstart + options.tgtMaxNullExp <= tgtend){
+					bool nullFlag = true;
+					for (size_t k = tgtstart; k <= tgtstart + options.tgtMaxNullExp; ++k){
+						if (m_wordAlignment.GetTargetAlignCount(k) > 0){
+							nullFlag = false;
+							break;
+						}
+					}
+					if (nullFlag){
+						continue;
 					}
 				}
 
-				ValidateRuleConsistency(PhrasePair(srcStartPos, srcEndPos, tgtStartPos, tgtEndPos, m_wordAlignment),
+				if (tgtend - options.tgtMaxNullExp >= tgtstart){
+					bool nullFlag = true;
+					for (size_t k = tgtend; k >= tgtend - options.tgtMaxNullExp; --k){
+						if (m_wordAlignment.GetTargetAlignCount(k) > 0){
+							nullFlag = false;
+							break;
+						}
+					}
+					if (nullFlag){
+						continue;
+					}
+				}
+				//find the minimally matching foreign phrase
+				size_t srcStartPos = srclen;
+				size_t srcEndPos = 0;
+				for (size_t k = tgtstart; k <= tgtend; ++k){
+					for (auto& align : m_wordAlignment.GetTargetAlign(k)){
+						srcStartPos = (align < srcStartPos) ? align : srcStartPos;
+						srcEndPos = (align > srcStartPos) ? align : srcStartPos;
+					}
+				}
+
+				ValidateRuleConsistency(PhrasePair(srcStartPos, srcEndPos, tgtstart, tgtend, m_wordAlignment),
 					m_wordAlignment, options);
 			}
 		}
 
 		//add X ||| NULL or NULL ||| X
-		if (options.isIncludeNullAlign){
+		if (options.includeNullAlign){
 			for each (size_t pos in m_wordAlignment.GetSourceNullAligned()){
-				PhrasePair phrasePair = PhrasePair(pos, pos, 1, 0, m_wordAlignment);
-				AddRule(phrasePair, true);
+				AddRule(PhrasePair(pos, pos, 1, 0, m_wordAlignment), true);		
 			}
 
 			for each(size_t pos in m_wordAlignment.GetTargetNullAligned()){
-				PhrasePair phrasePair = PhrasePair(1, 0, pos, pos, m_wordAlignment);
-				AddRule(phrasePair, true);
+				AddRule(PhrasePair(1, 0, pos, pos, m_wordAlignment), true);
 			}
 		}
-
 		return true;
 	}
 
 	//! check whether the extracted phrase pair is consistent with the word alignment
-	bool PhraseExtractor::ValidateRuleConsistency(PhrasePair &phrasePair, WordAlignment &wordAlignment,
+	void PhraseExtractor::ValidateRuleConsistency(PhrasePair &phrasePair, WordAlignment &wordAlignment,
 		RuleOptions &options) const
 	{
-		//first check if the source phrase length exceed maximum length
-		if ((phrasePair.SourceEndPos() - phrasePair.SourceStartPos() + 1) > options.srcMaxLen){
-			return false;
-		}
 		//check if at least one alignment point
-		if (phrasePair.SourceStartPos() > phrasePair.SourceEndPos()){
-			return false;
+		if (phrasePair.SourceStart() > phrasePair.SourceEnd()){
+			return;
+		}
+		//first check if the source phrase length exceed maximum length
+		if ((phrasePair.SourceEnd() - phrasePair.SourceStart() + 1) > options.srcMaxLen){
+			return;
 		}
 		//check if the rule breaks consistency
-		for (size_t k = phrasePair.SourceStartPos(); k <= phrasePair.SourceEndPos(); ++k){
-			for (vector<size_t>::const_iterator iter = wordAlignment.GetSourceAlignmentAtPos(k).begin();
-				iter != wordAlignment.GetSourceAlignmentAtPos(k).end(); ++iter){
-				if (*iter < phrasePair.TargetStartPos() || *iter > phrasePair.TargetEndPos()){
-					return false; //break the consistency rule
+		for (size_t k = phrasePair.SourceStart(); k <= phrasePair.SourceEnd(); ++k){
+			for (auto& align : wordAlignment.GetSourceAlign(k)){
+				if (align < phrasePair.TargetStart() || align > phrasePair.TargetEnd()){
+					return; //break the consistency rule
 				}
 			}
 		}
 
 		//expand the phrase pairs to include additional unaligned source
-		for (int sourceStart = phrasePair.SourceStartPos(); 
+		for (int sourceStart = phrasePair.SourceStart(); 
 			sourceStart >= 0 
-			&& (sourceStart == phrasePair.SourceStartPos() || wordAlignment.GetSourceAlignmentCountAtPos(sourceStart) == 0)
-			&& ((phrasePair.SourceStartPos() - sourceStart) <= options.srcMaxNullExpand); --sourceStart){
-			for (size_t sourceEnd = phrasePair.SourceEndPos(); 
+			&& (sourceStart == phrasePair.SourceStart() || wordAlignment.GetSourceAlignCount(sourceStart) == 0)
+			&& ((phrasePair.SourceStart() - sourceStart) <= options.srcMaxNullExp); --sourceStart){
+			for (size_t sourceEnd = phrasePair.SourceEnd(); 
 				sourceEnd < wordAlignment.SourceLength()
-				&& (sourceEnd == phrasePair.SourceEndPos() || wordAlignment.GetSourceAlignmentCountAtPos(sourceEnd) == 0)
+				&& (sourceEnd == phrasePair.SourceEnd() || wordAlignment.GetSourceAlignCount(sourceEnd) == 0)
 				&& (sourceEnd - sourceStart + 1) <= options.srcMaxLen 
-				&& (sourceEnd - phrasePair.SourceEndPos()) <= options.srcMaxNullExpand; ++sourceEnd){
+				&& (sourceEnd - phrasePair.SourceEnd()) <= options.srcMaxNullExp; ++sourceEnd){
 				//build a new phrase instance
-				PhrasePair newPhrasePair = PhrasePair(sourceStart, sourceEnd, phrasePair.TargetStartPos(), phrasePair.TargetEndPos(), wordAlignment);
+				PhrasePair newPhrasePair = PhrasePair(sourceStart, sourceEnd, phrasePair.TargetStart(), phrasePair.TargetEnd(), wordAlignment);
 				AddRule(newPhrasePair, false);
 			}
 		}
-
-		return true;
 	}
 
 
 	//!Add a new phrase pair to the collection
-	bool PhraseExtractor::AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const
+	void PhraseExtractor::AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const
 	{
-		this->m_phraseCollection.AddPhrasePair(phrasePair, hasEmptyRule);
-		return true;
+		m_phraseCollection.AddPhrasePair(phrasePair, hasEmptyRule);
 	}
 
 
@@ -117,8 +139,8 @@ namespace OrangeTraining
 	RuleOptions::RuleOptions()
 		:srcMaxLen(3)
 		, tgtMaxLen(5)
-		, srcMaxNullExpand(3)
-		, tgtMaxNullExpand(5)
-		, isIncludeNullAlign(true)
+		, srcMaxNullExp(3)
+		, tgtMaxNullExp(5)
+		, includeNullAlign(true)
 	{}
 }

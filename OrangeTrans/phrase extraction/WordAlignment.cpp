@@ -12,29 +12,29 @@
 
 #include "WordAlignment.h";
 #include "..\util\BasicMethod.h";
-
 #include <iostream>;
 
-using namespace std;
+using namespace OrangeTrans;
 
 namespace OrangeTraining
 {
 	/**Create a word alignment.
-	*\param sourceLangSentence  the source language sentence
-	*\param targetLangSentence  the target language sentence
+	*\param srcSentence  the source language sentence
+	*\param tgtSentence  the target language sentence
 	*\param alignment  the aligment between sentence pair
 	*/
-	WordAlignment::WordAlignment(
-		const string &sourceLangSentence
-		, const string &targetLangSentence
+
+	void WordAlignment::CreateAlignment(
+		const string &srcSentence
+		, const string &tgtSentence
 		, const string &alignment
 		, unsigned int sentenceID)
 	{
-		if (sourceLangSentence == ""){
+		if (srcSentence == ""){
 			cerr << endl
 				<< " WARNING: EMPTY sentence detected: " << sentenceID << " line in source file." << endl;
 		}
-		if (targetLangSentence == ""){
+		if (tgtSentence == ""){
 			cerr << endl
 				<< " WARNING: EMPTY sentence detected: " << sentenceID << " line in target file." << endl;
 		}
@@ -43,100 +43,85 @@ namespace OrangeTraining
 				<< " WARNING: EMPTY alignment detected: " << sentenceID << " line in alignment file." << endl;
 		}
 
-		this->m_sourceLangSentence = OrangeTrans::BasicMethod::ConvertStringtoVec(sourceLangSentence);
-		this->m_targetLangSentence = OrangeTrans::BasicMethod::ConvertStringtoVec(targetLangSentence);
-		this->m_sentenceID = sentenceID;
-		this->m_sourceLength = m_sourceLangSentence.size();
-		this->m_targetLength = m_targetLangSentence.size();
+		m_srcSentence = BasicMethod::Split(srcSentence);
+		m_tgtSentence = BasicMethod::Split(tgtSentence);
+		m_sentenceID = sentenceID;
+		m_srcLength = m_srcSentence.size();
+		m_tgtLength = m_tgtSentence.size();
 
-		vector<string> tmpVec = OrangeTrans::BasicMethod::ConvertStringtoVec(alignment);
-		size_t srclen = m_sourceLangSentence.size();
-		size_t tgtlen = m_targetLangSentence.size();
+		vector<string> tmpVec = BasicMethod::Split(alignment);
+		size_t srclen = m_srcSentence.size();
+		size_t tgtlen = m_tgtSentence.size();
 
 		//intialize data structures
-		this->m_srcAlignment.assign(srclen, vector<size_t>());
-		this->m_tgtAlignment.assign(tgtlen, vector<size_t>());
-		this->m_srcAlignmentCount.assign(srclen, 0);
-		this->m_tgtAlignmentCount.assign(tgtlen, 0);
+		m_srcAlign.assign(srclen, vector<size_t>());
+		m_tgtAlign.assign(tgtlen, vector<size_t>());
+		m_srcAlignCount.assign(srclen, 0);
+		m_tgtAlignCount.assign(tgtlen, 0);
 
-		for each (string align in tmpVec)
+		for (auto& align : tmpVec)
 		{
 			unsigned int srcWordId, tgtWordId;
 			//check aligment format
 			if (!sscanf_s(align.c_str(), "%d-%d", &srcWordId, &tgtWordId)){
 				cerr << "WARNING: " << align << " is a bad aligment point in sentence " << sentenceID << endl;
-				cerr << "T: " << targetLangSentence << endl << "S: " << sourceLangSentence << endl;
+				cerr << "T: " << tgtSentence << endl << "S: " << srcSentence << endl;
 			}
 			//check out of bound case
-			if ((size_t)srcWordId >= this->m_sourceLangSentence.size() || (size_t)tgtWordId >= this->m_targetLangSentence.size()){
+			if ((size_t)srcWordId >= m_srcSentence.size() || (size_t)tgtWordId >= m_tgtSentence.size()){
 				cerr << "WARNING: " << align << " out of bounds." << endl
-					<< "T: " << targetLangSentence << endl << "S: " << sourceLangSentence << endl;
+					<< "T: " << tgtSentence << endl << "S: " << srcSentence << endl;
 			}
 
-			this->m_srcAlignment[srcWordId].push_back(tgtWordId);
-			this->m_tgtAlignment[tgtWordId].push_back(srcWordId);
-			this->m_srcAlignmentCount[srcWordId]++;
-			this->m_tgtAlignmentCount[tgtWordId]++;
+			m_srcAlign[srcWordId].push_back(tgtWordId);
+			m_tgtAlign[tgtWordId].push_back(srcWordId);
+			m_srcAlignCount[srcWordId]++;
+			m_tgtAlignCount[tgtWordId]++;
 		}
 
 	}
 
-	WordAlignment::~WordAlignment()
-	{
-		//we clean up now
-		Clear();
-	}
-
-	/**do some clean up work*/
-	void WordAlignment::Clear()
-	{
-		this->m_sourceLangSentence.clear();
-		this->m_targetLangSentence.clear();
-		this->m_srcAlignment.clear();
-		this->m_tgtAlignment.clear();
-	}
-
 	//!get vector representation of souce sentence
-	const vector<string> & WordAlignment::SourceSentenceVector() const
+	const vector<string> & WordAlignment::SourceSentence() const
 	{
-		return this->m_sourceLangSentence;
+		return m_srcSentence;
 	}
 
 	//! get vector representation of target sentence
-	const vector<string> & WordAlignment::TargetSentenceVector() const
+	const vector<string> & WordAlignment::TargetSentence() const
 	{
-		return this->m_targetLangSentence;
+		return m_tgtSentence;
 	}
 
 	//! return source sentence length
 	size_t WordAlignment::SourceLength() const
 	{
-		return this->m_sourceLength;
+		return m_srcLength;
 	}
 
 	//! return target sentence length
 	size_t WordAlignment::TargetLength() const
 	{
-		return this->m_targetLength;
+		return m_tgtLength;
 	}
 
 	//! Get alignment points of source word at position pos
-	const vector<size_t> & WordAlignment::GetSourceAlignmentAtPos(size_t pos) const
+	const vector<size_t> & WordAlignment::GetSourceAlign(size_t pos) const
 	{
-		return this->m_srcAlignment[pos];
+		return m_srcAlign[pos];
 	}
 
 	//! Get alignment points of target word at position pos
-	const vector<size_t> & WordAlignment::GetTargetAlignmentAtPos(size_t pos) const
+	const vector<size_t> & WordAlignment::GetTargetAlign(size_t pos) const
 	{
-		return this->m_tgtAlignment[pos];
+		return m_tgtAlign[pos];
 	}
 
 	//! Get count of alignment points of source word at position pos
-	size_t WordAlignment::GetSourceAlignmentCountAtPos(size_t pos) const
+	size_t WordAlignment::GetSourceAlignCount(size_t pos) const
 	{
-		if (pos >= 0 && pos < m_srcAlignmentCount.size()){
-			return this->m_srcAlignmentCount[pos];
+		if (pos >= 0 && pos < m_srcAlignCount.size()){
+			return m_srcAlignCount[pos];
 		}
 		else{
 			throw exception("WordAlignment.GetSourceAlignmentCountAtPos(size_t pos): index out of bounds!");
@@ -144,10 +129,10 @@ namespace OrangeTraining
 	}
 
 	//! Get count of alignment points of target word at position pos
-	size_t WordAlignment::GetTargetAlignmentCountAtPos(size_t pos) const
+	size_t WordAlignment::GetTargetAlignCount(size_t pos) const
 	{
-		if (pos >= 0 && pos < m_tgtAlignmentCount.size()){
-			return this->m_tgtAlignmentCount[pos];
+		if (pos >= 0 && pos < m_tgtAlignCount.size()){
+			return m_tgtAlignCount[pos];
 		}
 		else{
 			throw exception("WordAlignment.GetTargetAlignmentCountAtPos(size_t pos): index out of bounds!");
@@ -155,20 +140,20 @@ namespace OrangeTraining
 	}
 
 	//! Get substring(phrase) of source sentence
-	string WordAlignment::GetSourceSubstring(size_t startPos, size_t endPos) const
+	string WordAlignment::GetSourcePhrase(size_t startPos, size_t endPos) const
 	{
 		if (startPos > endPos){
 			return "NULL";
 		}
-		if ((startPos < 0 || startPos >= m_sourceLangSentence.size())
-			|| (endPos < 0 || endPos >= m_sourceLangSentence.size())){
+		if ((startPos < 0 || startPos >= m_srcSentence.size())
+			|| (endPos < 0 || endPos >= m_srcSentence.size())){
 			throw exception("WordAlignment.GetSourceSubstring(size_t startPos, size_t endPos): index out of bounds!");
 		}
 
 
 		string src = "";
 		for (size_t k = startPos; k <= endPos; ++k){
-			src += this->m_sourceLangSentence[k];
+			src += m_srcSentence[k];
 			if (k != endPos){
 				src += " ";
 			}
@@ -177,20 +162,20 @@ namespace OrangeTraining
 	}
 
 	//! Get substring(phrase) of target sentence
-	string WordAlignment::GetTargetSubstring(size_t startPos, size_t endPos) const
+	string WordAlignment::GetTargetPhrase(size_t startPos, size_t endPos) const
 	{
 		if (startPos > endPos){
 			return "NULL";
 		}
 
-		if ((startPos < 0 || startPos >= m_targetLangSentence.size())
-			|| (endPos < 0 || endPos >= m_targetLangSentence.size())){
+		if ((startPos < 0 || startPos >= m_tgtSentence.size())
+			|| (endPos < 0 || endPos >= m_tgtSentence.size())){
 			throw exception("WordAlignment.GetTargetSubstring(size_t startPos, size_t endPos): index out of bounds!");
 		}
 
 		string tgt = "";
 		for (size_t k = startPos; k <= endPos; ++k){
-			tgt += this->m_targetLangSentence[k];
+			tgt += m_tgtSentence[k];
 			if (k != endPos){
 				tgt += " ";
 			}
@@ -202,8 +187,8 @@ namespace OrangeTraining
 	vector<size_t> WordAlignment::GetSourceNullAligned() const
 	{
 		vector<size_t> result;
-		for (size_t i = 0; i < m_sourceLength; ++i){
-			if (m_srcAlignment[i].size() == 0){
+		for (size_t i = 0; i < m_srcLength; ++i){
+			if (m_srcAlign[i].size() == 0){
 				result.push_back(i);
 			}
 		}
@@ -214,8 +199,8 @@ namespace OrangeTraining
 	vector<size_t> WordAlignment::GetTargetNullAligned() const
 	{
 		vector<size_t> result;
-		for (size_t i = 0; i < m_targetLength; ++i){
-			if (m_tgtAlignment[i].size() == 0){
+		for (size_t i = 0; i < m_tgtLength; ++i){
+			if (m_tgtAlign[i].size() == 0){
 				result.push_back(i);
 			}
 		}

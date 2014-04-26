@@ -31,9 +31,9 @@ namespace OrangeTraining
 		RuleOptions();
 		size_t srcMaxLen;
 		size_t tgtMaxLen;
-		size_t srcMaxNullExpand; //! maximum number of expansion of NULL align in source
-		size_t tgtMaxNullExpand; //! maximum number of expansion of NULL align in target
-		bool isIncludeNullAlign; //! allows for NULL rule	
+		size_t srcMaxNullExp; //! maximum number of expansion of NULL align in source
+		size_t tgtMaxNullExp; //! maximum number of expansion of NULL align in target
+		bool includeNullAlign; //! allows for NULL rule	
 	};
 
 
@@ -52,10 +52,10 @@ namespace OrangeTraining
 		WordAlignment &m_wordAlignment; //! the word alignment
 		PhraseCollection &m_phraseCollection;
 
-		bool ValidateRuleConsistency(PhrasePair &phrasePair,
+		void ValidateRuleConsistency(PhrasePair &phrasePair,
 			WordAlignment &wordAlignment,
 			RuleOptions &options) const;
-		bool AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const;
+		void AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const;
 
 	};
 }

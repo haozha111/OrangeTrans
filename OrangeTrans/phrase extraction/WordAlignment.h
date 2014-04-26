@@ -23,45 +23,43 @@ namespace OrangeTraining
 	/**The WordAlignment is used for storing source language sentence, 
 	* target language sentence, and the alignment between them.
 	**/
+	using namespace std;
 
 	class WordAlignment
 	{
 	public:
-		//!constructor for the word alignment 
-		WordAlignment(
-			const std::string &sourceLangSentence
-			,const std::string &targetLangSentence
-			,const std::string &alignment
+		void CreateAlignment(
+			 const string &srcSentence
+			,const string &tgtSentence
+			,const string &alignment
 			,unsigned int sentenceID);
-		~WordAlignment();
 
 		//methods
 
-		void Clear();
-		const std::vector<size_t> & GetSourceAlignmentAtPos(size_t pos) const;
-		const std::vector<size_t> & GetTargetAlignmentAtPos(size_t pos) const;
-		size_t GetSourceAlignmentCountAtPos(size_t pos) const;
-		size_t GetTargetAlignmentCountAtPos(size_t pos) const;
-		std::string GetSourceSubstring(size_t startPos, size_t endPos) const;
-		std::string GetTargetSubstring(size_t startPos, size_t endPos) const;
-		std::vector<size_t> GetSourceNullAligned() const;
-		std::vector<size_t> GetTargetNullAligned() const;
+		const vector<size_t> & GetSourceAlign(size_t pos) const;
+		const vector<size_t> & GetTargetAlign(size_t pos) const;
+		size_t GetSourceAlignCount(size_t pos) const;
+		size_t GetTargetAlignCount(size_t pos) const;
+		string GetSourcePhrase(size_t start, size_t end) const;
+		string GetTargetPhrase(size_t start, size_t end) const;
+		vector<size_t> GetSourceNullAligned() const;
+		vector<size_t> GetTargetNullAligned() const;
 
 		//attributes
-		const std::vector<std::string> & SourceSentenceVector() const;
-		const std::vector<std::string> & TargetSentenceVector() const;
+		const vector<string> & SourceSentence() const;
+		const vector<string> & TargetSentence() const;
 		size_t SourceLength() const;
 		size_t TargetLength() const;
 
 	private:
-		std::vector<std::string> m_sourceLangSentence; //! stores each word of the source language sentence into a vector
-		std::vector<std::string> m_targetLangSentence; //! stores each word of the target language sentence into a vector
-		std::vector<std::vector<size_t> > m_srcAlignment; //! stores alignment point for each source language word
-		std::vector<std::vector<size_t> > m_tgtAlignment; //! stores alignment point for each target language word
-		std::vector<size_t> m_srcAlignmentCount; //! count of aligment points for each src word 
-		std::vector<size_t> m_tgtAlignmentCount; //! count of aligment points for each tgt word
-		size_t m_sourceLength;
-		size_t m_targetLength;
+		vector<string> m_srcSentence; //! stores each word of the source language sentence into a vector
+		vector<string> m_tgtSentence; //! stores each word of the target language sentence into a vector
+		vector<vector<size_t> > m_srcAlign; //! stores alignment point for each source language word
+		vector<vector<size_t> > m_tgtAlign; //! stores alignment point for each target language word
+		vector<size_t> m_srcAlignCount; //! count of aligment points for each src word 
+		vector<size_t> m_tgtAlignCount; //! count of aligment points for each tgt word
+		size_t m_srcLength;
+		size_t m_tgtLength;
 		unsigned int m_sentenceID; 
 	};
 }

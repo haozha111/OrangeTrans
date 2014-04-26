@@ -26,104 +26,88 @@ namespace OrangeTraining
 	{
 		//add alignment info
 		for (size_t k = tgtStart; k <= tgtEnd; ++k){
-
-			for (vector<size_t>::const_iterator iter = wordAlignment.GetTargetAlignmentAtPos(k).begin();
-				iter != wordAlignment.GetTargetAlignmentAtPos(k).end(); ++iter){
-				this->m_alignInfo.push_back(make_pair(k - tgtStart, *iter - srcStart));
+			for (auto& align : wordAlignment.GetTargetAlign(k)){
+				m_alignInfo.push_back(make_pair(k - tgtStart, align - srcStart));
 			}
 		}
 		//add phrase string
-		this->m_srcPhrase = wordAlignment.GetSourceSubstring(srcStart, srcEnd);
-		this->m_tgtPhrase = wordAlignment.GetTargetSubstring(tgtStart, tgtEnd);
+		m_srcPhrase = wordAlignment.GetSourcePhrase(srcStart, srcEnd);
+		m_tgtPhrase = wordAlignment.GetTargetPhrase(tgtStart, tgtEnd);
 
 	}
 
-	size_t PhrasePair::SourceStartPos() const
+	size_t PhrasePair::SourceStart() const
 	{
-		return this->m_srcStart;
+		return m_srcStart;
 	}
 
-	size_t PhrasePair::SourceEndPos() const
+	size_t PhrasePair::SourceEnd() const
 	{
-		return this->m_srcEnd;
+		return m_srcEnd;
 	}
 
-	size_t PhrasePair::TargetStartPos() const
+	size_t PhrasePair::TargetStart() const
 	{
-		return this->m_tgtStart;
+		return m_tgtStart;
 	}
 
-	size_t PhrasePair::TargetEndPos() const
+	size_t PhrasePair::TargetEnd() const
 	{
-		return this->m_tgtEnd;
+		return m_tgtEnd;
 	}
 
 	string PhrasePair::SourcePhrase() const
 	{
-		return this->m_srcPhrase;
+		return m_srcPhrase;
 	}
 
 	string PhrasePair::TargetPhrase() const
 	{
-		return this->m_tgtPhrase;
+		return m_tgtPhrase;
 	}
 
 	const vector<pair<size_t, size_t> > & PhrasePair::AlignInfo() const
 	{
-		return this->m_alignInfo;
+		return m_alignInfo;
 	}
 
 	//PhraseCollection code
 
-	PhraseCollection::PhraseCollection()
-	{}
+	PhraseCollection::PhraseCollection(){}
 
-	PhraseCollection::~PhraseCollection()
-	{
-		Clear();
-	}
 
-	bool PhraseCollection::AddPhrasePair(const PhrasePair &phrasePair, bool hasEmptyPhrase)
+	void PhraseCollection::AddPhrasePair(const PhrasePair &phrasePair, bool hasEmptyPhrase)
 	{
-		this->m_phraseCollection.push_back(phrasePair);
+		m_phraseCollection.push_back(phrasePair);
 		if (hasEmptyPhrase){
-			this->m_nullRuleCount++;
+			m_nullRuleCount++;
 		}
-		this->m_totalRuleCount++;
-		return true;
+		m_totalRuleCount++;
 	}
 
-	bool PhraseCollection::WritetoFile(ofstream &output, ofstream &outputinv) const
+	void PhraseCollection::Write(ofstream &output, ofstream &outputinv) const
 	{
-		for (vector<PhrasePair>::const_iterator iter = this->m_phraseCollection.begin();
-			iter != this->m_phraseCollection.end(); ++iter){
-			output << iter->SourcePhrase() << " ||| " << iter->TargetPhrase() << " |||";
-			outputinv << iter->TargetPhrase() << " ||| " << iter->SourcePhrase() << " |||";
-			for each (pair<size_t, size_t> align in iter->AlignInfo()){
+		for (PhrasePair rule : m_phraseCollection){
+			output << rule.SourcePhrase() << " ||| " << rule.TargetPhrase() << " |||";
+			outputinv << rule.TargetPhrase() << " ||| " << rule.SourcePhrase() << " |||";
+			for (pair<size_t, size_t> align : rule.AlignInfo()){
 				output << " " << align.second << "-" << align.first;
 				outputinv << " " << align.first << "-" << align.second;
 			}
 			output << endl;
 			outputinv << endl;
 		}
-
-		return true;
 	}
 
-	void PhraseCollection::Clear()
-	{
-		this->m_phraseCollection.clear();
-
-	}
 
 	size_t PhraseCollection::TotalRuleCount() const
 	{
-		return this->m_totalRuleCount;
+		return m_totalRuleCount;
 	}
 
 	size_t PhraseCollection::NullRuleCount() const
 	{
-		return this->m_nullRuleCount;
+		return m_nullRuleCount;
 	}
 
 

@@ -22,19 +22,19 @@ namespace OrangeTraining
 	class PhraseExtractionPipeline
 	{
 	public:
-		PhraseExtractionPipeline(std::string sourceTrainset
-			, std::string targetTrainset
-			, std::string alignment
-			, std::string ruleOuputFile
-			, std::string ruleInvertedOutputFile);
+		PhraseExtractionPipeline(std::string srcTrainset
+			, std::string tgtTrainset
+			, std::string align
+			, std::string ruleOuput
+			, std::string ruleInvOutput);
 
 		bool StartPhraseExtraction();
 	private:
-		std::string m_sourceTrainset;
-		std::string m_targetTrainset;
-		std::string m_alignment;
-		std::string m_ruleOuputFile;
-		std::string m_ruleInvertedOutputFile;
+		std::string m_srcTrainset;
+		std::string m_tgtTrainset;
+		std::string m_align;
+		std::string m_ruleOuput;
+		std::string m_ruleInvOutput;
 	};
 }
 
