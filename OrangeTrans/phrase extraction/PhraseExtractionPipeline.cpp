@@ -51,20 +51,14 @@ namespace OrangeTraining
 			WordAlignment wordAlignment;
 			wordAlignment.CreateAlignment(srcline, tgtline,
 				alignline, sentenceID);
-			
-			clock_t start = clock();
-
 			//extract phrase pairs from this alignment
-			cerr <<  "Processing line No." << sentenceID << endl;
 			PhraseExtractor phraseExtractor = PhraseExtractor(wordAlignment, phraseCollection);
-			//cout << clock() - start << endl;
-
 			phraseExtractor.ExtractPhrasePair(ruleOptions);
-			//cout << clock() - start << endl;
-
 			phraseCollection.Write(ruleOutput, ruleInvOutput);
-			//cout << clock() - start << endl;
 			sentenceID++;
+            if (sentenceID % 1000 == 0){
+                cerr << "Processed " << sentenceID << " lines." << endl;
+            }
 		}
 		srcTrainset.close();
 		tgtTrainset.close();
