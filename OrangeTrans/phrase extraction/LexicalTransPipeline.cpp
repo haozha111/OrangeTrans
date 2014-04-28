@@ -17,21 +17,21 @@
 
 namespace OrangeTraining
 {
-	LexicalTransPipeline::LexicalTransPipeline(){}
+  LexicalTransPipeline::LexicalTransPipeline(){}
 
-	void LexicalTransPipeline::Start(string &psrc, string &ptgt, string &palign
-		, string &ps2t, string &pt2s)
-	{
-		if (psrc == "" || ptgt == "" || palign == ""
-			|| ps2t == "" || pt2s == ""){
-			cerr << "ERROR: Please check file paths!" << endl;
-			return;
-		}
+  void LexicalTransPipeline::Start(string &psrc, string &ptgt, string &palign
+    , string &ps2t, string &pt2s)
+  {
+    if (psrc == "" || ptgt == "" || palign == ""
+      || ps2t == "" || pt2s == ""){
+      cerr << "ERROR: Please check file paths!" << endl;
+      return;
+    }
 
-		LexicalTranslation* lexbuilder = new LexicalTranslation();
-		cerr << "Building lexicon translation..." << endl;
-		lexbuilder->BuildLexicon(psrc, ptgt, palign);
-		cerr << "Writing result..." << endl;
-		lexbuilder->Write(ps2t, pt2s);
-	}
+    LexicalTranslation* lexbuilder = new LexicalTranslation();
+    cerr << "Building lexicon translation..." << endl;
+    lexbuilder->BuildLexicon(psrc, ptgt, palign);
+    cerr << "Writing result..." << endl;
+    lexbuilder->Write(ps2t, pt2s);
+  }
 }

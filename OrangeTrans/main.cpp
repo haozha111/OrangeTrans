@@ -21,24 +21,23 @@ using namespace std;
 
 void main(int argc, char* argv[])
 {
-    using namespace OrangeTraining;
+  using namespace OrangeTraining;
 
-	string src = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\chi.txt"; 
-	string tgt = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\eng.txt";
-	string align = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\aln.txt";
-	string rule = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\extract\\rule";
-	string ruleinv = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\extract\\rule.inv";
-	PhraseExtractionPipeline p = PhraseExtractionPipeline(src, tgt, align, rule, ruleinv);
-	p.StartPhraseExtraction();
+  string src = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\chi.txt";
+  string tgt = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\eng.txt";
+  string align = "C:\\Users\\v-haozha\\Desktop\\orange\\data\\aln.txt";
+  string rule = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\extract\\rule";
+  string ruleinv = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\extract\\rule.inv";
+  PhraseExtractionPipeline p = PhraseExtractionPipeline(src, tgt, align, rule, ruleinv);
+  p.StartPhraseExtraction();
 
+  /*******************************/
+  //string s2t = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\s2t.lex";
+  //string t2s = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\t2s.lex";
 
-	/*******************************/
-	string s2t = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\s2t.lex";
-	string t2s = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\t2s.lex";
+  //LexicalTransPipeline lexpipe;
+  //lexpipe.Start(src, tgt, align, s2t, t2s);
 
-	LexicalTransPipeline lexpipe;
-	lexpipe.Start(src, tgt, align, s2t, t2s);
-	
 
 }
 

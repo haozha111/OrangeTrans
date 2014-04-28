@@ -25,39 +25,39 @@ the input word alignment.
 
 namespace OrangeTraining
 {
-	enum class RuleType { Phrase, HieroPhrase };
-	class RuleOptions{
-	public:
-		RuleOptions();
-		size_t srcMaxLen;
-		size_t tgtMaxLen;
-		size_t srcMaxNullExp; //! maximum number of expansion of NULL align in source
-		size_t tgtMaxNullExp; //! maximum number of expansion of NULL align in target
-		bool includeNullAlign; //! allows for NULL rule	
-	};
+  enum class RuleType { Phrase, HieroPhrase };
+  class RuleOptions{
+  public:
+    RuleOptions();
+    size_t srcMaxLen;
+    size_t tgtMaxLen;
+    size_t srcMaxNullExp; //! maximum number of expansion of NULL align in source
+    size_t tgtMaxNullExp; //! maximum number of expansion of NULL align in target
+    bool includeNullAlign; //! allows for NULL rule	
+  };
 
 
-	class PhraseExtractor
-	{
-	public:
-		//! constructor for PhraseExtractor class
-		PhraseExtractor(
-			WordAlignment &wordAlignment,
-			PhraseCollection &phraseCollection
-			);
+  class PhraseExtractor
+  {
+  public:
+    //! constructor for PhraseExtractor class
+    PhraseExtractor(
+      WordAlignment &wordAlignment,
+      PhraseCollection &phraseCollection
+      );
 
-		//! extract phrase pair
-		bool ExtractPhrasePair(RuleOptions &option) const;
-	private:
-		WordAlignment &m_wordAlignment; //! the word alignment
-		PhraseCollection &m_phraseCollection;
+    //! extract phrase pair
+    bool ExtractPhrasePair(RuleOptions &option) const;
+  private:
+    WordAlignment &m_wordAlignment; //! the word alignment
+    PhraseCollection &m_phraseCollection;
 
-		void ValidateRuleConsistency(PhrasePair &phrasePair,
-			WordAlignment &wordAlignment,
-			RuleOptions &options) const;
-		void AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const;
+    void ValidateRuleConsistency(PhrasePair &phrasePair,
+      WordAlignment &wordAlignment,
+      RuleOptions &options) const;
+    void AddRule(PhrasePair &phrasePair, bool hasEmptyRule) const;
 
-	};
+  };
 }
 
 #endif

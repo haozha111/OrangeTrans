@@ -20,55 +20,55 @@
 
 namespace OrangeTraining
 {
-	class PhrasePair
-	{
-	public:
-		PhrasePair(size_t srcStart, size_t srcEnd, size_t tgtStart, size_t tgtEnd
-			, const WordAlignment &wordAlignment);
-		
-		//method
+  class PhrasePair
+  {
+  public:
+    PhrasePair(size_t srcStart, size_t srcEnd, size_t tgtStart, size_t tgtEnd
+      , const WordAlignment &wordAlignment);
 
-		//atributes
+    //method
 
-		size_t SourceStart() const;
-		size_t SourceEnd() const;
-		size_t TargetStart() const;
-		size_t TargetEnd() const;
-		std::string SourcePhrase() const;
-		std::string TargetPhrase() const;
-		const std::vector<std::pair<size_t, size_t> > & AlignInfo() const;
+    //atributes
 
-	private:
-		size_t m_srcStart;
-		size_t m_srcEnd;
-		size_t m_tgtStart;
-		size_t m_tgtEnd;
-		std::vector<std::pair<size_t, size_t> > m_alignInfo;
-		std::string m_srcPhrase;
-		std::string m_tgtPhrase;
-	};
+    size_t SourceStart() const;
+    size_t SourceEnd() const;
+    size_t TargetStart() const;
+    size_t TargetEnd() const;
+    std::string SourcePhrase() const;
+    std::string TargetPhrase() const;
+    const std::vector<std::pair<size_t, size_t> > & AlignInfo() const;
 
-	//! The PhraseCollection class is to store the extracted phrase pairs
-	class PhraseCollection{
-	public:
-		PhraseCollection();
-		//! Add a new phrasePair to the collection
+  private:
+    size_t m_srcStart;
+    size_t m_srcEnd;
+    size_t m_tgtStart;
+    size_t m_tgtEnd;
+    std::vector<std::pair<size_t, size_t> > m_alignInfo;
+    std::string m_srcPhrase;
+    std::string m_tgtPhrase;
+  };
 
-		//methods
+  //! The PhraseCollection class is to store the extracted phrase pairs
+  class PhraseCollection{
+  public:
+    PhraseCollection();
+    //! Add a new phrasePair to the collection
 
-		void AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
-		//! print all rules in this collection to file
-		void Write(std::ofstream &output, std::ofstream &outputinv) const;
-		//attributes
+    //methods
 
-		size_t TotalRuleCount() const;
-		size_t NullRuleCount() const;
-	private:
-		std::vector<PhrasePair> m_phraseCollection;
-		size_t m_totalRuleCount; 
-		size_t m_nullRuleCount; //! count of Null rule (X ||| NULL) in the collection
+    void AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
+    //! print all rules in this collection to file
+    void Write(std::ofstream &output, std::ofstream &outputinv) const;
+    //attributes
 
-	};
+    size_t TotalRuleCount() const;
+    size_t NullRuleCount() const;
+  private:
+    std::vector<PhrasePair> m_phraseCollection;
+    size_t m_totalRuleCount;
+    size_t m_nullRuleCount; //! count of Null rule (X ||| NULL) in the collection
+
+  };
 
 
 }

@@ -20,51 +20,60 @@ using namespace std;
 
 namespace OrangeTraining
 {
-	PhraseExtractionPipeline::PhraseExtractionPipeline(string srcTrainset
-		, string tgtTrainset
-		, string alignment
-		, string ruleOuputFile
-		, string ruleInvOutput)
-		:m_srcTrainset(srcTrainset)
-		, m_tgtTrainset(tgtTrainset)
-		, m_align(alignment)
-		, m_ruleOuput(ruleOuputFile)
-		, m_ruleInvOutput(ruleInvOutput) {}
+  PhraseExtractionPipeline::PhraseExtractionPipeline(string srcTrainset
+    , string tgtTrainset
+    , string alignment
+    , string ruleOuputFile
+    , string ruleInvOutput)
+    :m_srcTrainset(srcTrainset)
+    , m_tgtTrainset(tgtTrainset)
+    , m_align(alignment)
+    , m_ruleOuput(ruleOuputFile)
+    , m_ruleInvOutput(ruleInvOutput) {}
 
-	bool PhraseExtractionPipeline::StartPhraseExtraction()
-	{
-		string srcline, tgtline, alignline;
-		size_t sentenceID = 1;
-		RuleOptions ruleOptions = RuleOptions();
+  bool PhraseExtractionPipeline::StartPhraseExtraction()
+  {
+    using namespace OrangeTrans;
 
-		ifstream srcTrainset(m_srcTrainset.c_str());
-		ifstream tgtTrainset(m_tgtTrainset.c_str());
-		ifstream align(m_align.c_str());
-		ofstream ruleOutput(m_ruleOuput.c_str());
-		ofstream ruleInvOutput(m_ruleInvOutput.c_str());
+    string srcline, tgtline, alignline;
+    size_t sentenceID = 1;
+    RuleOptions ruleOptions = RuleOptions();
 
-		while (getline(srcTrainset, srcline)
-			&& getline(tgtTrainset, tgtline)
-			&& getline(align, alignline)){
-			//create a new word alignment
-			PhraseCollection phraseCollection;
-			WordAlignment wordAlignment;
-			wordAlignment.CreateAlignment(srcline, tgtline,
-				alignline, sentenceID);
-			//extract phrase pairs from this alignment
-			PhraseExtractor phraseExtractor = PhraseExtractor(wordAlignment, phraseCollection);
-			phraseExtractor.ExtractPhrasePair(ruleOptions);
-			phraseCollection.Write(ruleOutput, ruleInvOutput);
-			sentenceID++;
-            if (sentenceID % 1000 == 0){
-                cerr << "Processed " << sentenceID << " lines." << endl;
-            }
-		}
-		srcTrainset.close();
-		tgtTrainset.close();
-		align.close();
-		ruleOutput.close();
-		ruleInvOutput.close();
-		return true;
-	}
+    ifstream srcTrainset(m_srcTrainset.c_str());
+    ifstream tgtTrainset(m_tgtTrainset.c_str());
+    ifstream align(m_align.c_str());
+    ofstream ruleOutput(m_ruleOuput.c_str());
+    ofstream ruleInvOutput(m_ruleInvOutput.c_str());
+
+    while (getline(srcTrainset, srcline)
+      && getline(tgtTrainset, tgtline)
+      && getline(align, alignline)){
+      //create a new word alignment
+      PhraseCollection phraseCollection;
+      WordAlignment wordAlignment;
+      wordAlignment.CreateAlignment(srcline, tgtline,
+        alignline, sentenceID);
+      //extract phrase pairs from this alignment
+      PhraseExtractor phraseExtractor = PhraseExtractor(wordAlignment, phraseCollection);
+      phraseExtractor.ExtractPhrasePair(ruleOptions);
+      phraseCollection.Write(ruleOutput, ruleInvOutput);
+      sentenceID++;
+      if (sentenceID % 1000 == 0){
+        cerr << "Processed " << sentenceID << " lines." << endl;
+      }
+    }
+    srcTrainset.close();
+    tgtTrainset.close();
+    align.close();
+    ruleOutput.close();
+    ruleInvOutput.close();
+
+    //sort the rule table for phrase table generation phase
+    BasicMethod::Sort(m_ruleOuput);
+    BasicMethod::Sort(m_ruleInvOutput);
+    //delete old rule tables
+    BasicMethod::Delete(m_ruleOuput);
+    BasicMethod::Delete(m_ruleInvOutput);
+    return true;
+  }
 }
