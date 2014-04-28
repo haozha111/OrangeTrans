@@ -48,7 +48,7 @@
     <ClInclude Include="phrase extraction\LexicalTransPipeline.h">
       <Filter>Header Files\phrase extraction</Filter>
     </ClInclude>
-    <ClInclude Include="phrase extraction\PhraseScorer.h">
+    <ClInclude Include="phrase extraction\PhraseTransTblBuilder.h">
       <Filter>Header Files\phrase extraction</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClCompile Include="phrase extraction\LexicalTransPipeline.cpp">
       <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
-    <ClCompile Include="phrase extraction\PhraseScorer.cpp">
+    <ClCompile Include="phrase extraction\PhraseTransTblBuilder.cpp">
       <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
   </ItemGroup>
