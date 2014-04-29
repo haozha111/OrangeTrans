@@ -17,6 +17,7 @@
 #include "phrase extraction\PhraseExtractionPipeline.h";
 #include "phrase extraction\LexicalTransPipeline.h";
 #include "phrase extraction\PhraseTransTblBuilder.h";
+#include "phrase extraction\PhraseTransTblBuilder.h";
 
 using namespace std;
 
@@ -41,7 +42,9 @@ void main(int argc, char* argv[])
 
   string r1 = "C:\\Users\\v-haozha\\Desktop\\NiuTrans_1.3.0_CWMT2013\\work\\extract\\extract.sorted";
   string r2 = "C:\\Users\\v-haozha\\Desktop\\NiuTrans_1.3.0_CWMT2013\\work\\extract\\extract.inv.sorted";
-  PhraseTransTblBuilder builder = PhraseTransTblBuilder(r1, r2);
+  string plex = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\s2t.lex";
+  string output = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\model\\phrasetable";
+  PhraseTransTblBuilder builder = PhraseTransTblBuilder(r1, r2, output, plex);
   builder.BuildPhraseTransTbl();
 }
 

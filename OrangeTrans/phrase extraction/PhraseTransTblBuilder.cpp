@@ -14,6 +14,8 @@ the input word alignment.
 
 #include "PhraseTransTblBuilder.h";
 #include "..\util\BasicMethod.h";
+#include <math.h>
+
 namespace OrangeTraining
 {
   using namespace OrangeTrans;
@@ -30,7 +32,7 @@ namespace OrangeTraining
 
     //read lexical table
     string line;
-    while (!getline(fin, line)){
+    while (getline(fin, line)){
       vector<string> tmpVec = BasicMethod::Split(line);
       if (tmpVec.size() != 3){
         cerr << "WARNING: lexicon entry: " << line << " is bad data." << endl;
@@ -47,7 +49,7 @@ namespace OrangeTraining
     fin.close();
   }
 
-  double LexicalTable::GetLexicalWeight(const PhraseTblEntry &entry)
+  double LexicalTable::GetLexicalWeight(PhraseTblEntry &entry)
   {
     vector<vector<size_t> > alignedToTgt = entry.AlignedToTarget();
     vector<string> srcphrase = entry.SourcePhraseVec();
@@ -56,36 +58,42 @@ namespace OrangeTraining
     for (size_t t = 0; t < alignedToTgt.size(); ++t){
       double score = 0;
       string tgtword = tgtphrase[t];
-      for (size_t s : alignedToTgt[t]){
-        string srcword = srcphrase[s];
-        double lexScore = m_lexTable[srcword][tgtword];
-        score += lexScore;
+      if (alignedToTgt[t].size() > 0)
+      {
+        for (size_t s : alignedToTgt[t]){
+          string srcword = srcphrase[s];
+          double lexScore = m_lexTable[srcword][tgtword];
+          score += lexScore;
+        }
+        score /= (double)alignedToTgt[t].size();
       }
-      score /= alignedToTgt[t].size();
-      lexicalWgt *= score;
+      if (score > 0)
+      {
+        lexicalWgt *= score;
+      }
     }
-    return lexicalWgt;
+    return log(lexicalWgt); //return the natural logarithm of score
   }
-
 
   //code for PhraseTableEntry
   /**Create a phrase table entry. Initialize phrases, scores and alignment*/
-  bool PhraseTblEntry::CreatePhraseTblEntry(const string &srcPhrase
-    , const string &tgtPhrase
-    , const string &align)
+  bool PhraseTblEntry::CreatePhraseTblEntry(string &srcPhrase
+    , string &tgtPhrase, string &align)
   {
+    m_srcphrase = srcPhrase;
+    m_tgtphrase = tgtPhrase;
+    m_align = align;
     m_phraseTransWgt = 0;
-    m_freq = 0;
+    m_freq = 1;
     m_srcphraseVec = BasicMethod::Split(srcPhrase);
     m_tgtphraseVec = BasicMethod::Split(tgtPhrase);
-
-    m_srclen = BasicMethod::Split(srcPhrase).size();
-    m_tgtlen = BasicMethod::Split(tgtPhrase).size();
+    m_srclen = m_srcphraseVec.size();
+    m_tgtlen = m_tgtphraseVec.size();
     m_alignedToSrc.assign(m_srclen, vector<size_t>());
     m_alignedToTgt.assign(m_tgtlen, vector<size_t>());
     //init alignment of phrase
     vector<string> tmpVec = BasicMethod::Split(align);
-    size_t srcWordId, tgtWordId;
+    unsigned int srcWordId, tgtWordId;
     for (auto &aln : tmpVec){
       if (!sscanf_s(aln.c_str(), "%d-%d", &srcWordId, &tgtWordId)){
         cerr << "bad phrase alignment: << aln << T :"
@@ -100,7 +108,6 @@ namespace OrangeTraining
       }
       m_alignedToSrc[srcWordId].push_back(tgtWordId);
       m_alignedToTgt[tgtWordId].push_back(srcWordId);
-      //compute lexical weight
     }
     return true;
   }
@@ -113,16 +120,6 @@ namespace OrangeTraining
   const vector<string>& PhraseTblEntry::TargetPhraseVec() const
   {
     return m_tgtphraseVec;
-  }
-
-  string PhraseTblEntry::SourcePhrase() const
-  {
-    return m_srcphrase;
-  }
-
-  string PhraseTblEntry::TargetPhrase() const
-  {
-    return m_tgtphrase;
   }
 
   const vector<vector<size_t> >& PhraseTblEntry::AlignedToSource() const
@@ -145,52 +142,211 @@ namespace OrangeTraining
     return m_tgtlen;
   }
 
-  void PhraseTblEntry::SetFrequency(size_t freq)
+  bool PhraseTblEntry::Equals(const PhraseTblEntry &entry) const
   {
-    m_freq = freq;
+    return (m_srcphrase == entry.m_srcphrase)
+      && (m_tgtphrase == entry.m_tgtphrase)
+      && (m_align == entry.m_align);
   }
 
-  //code for PhraseScorer
-  PhraseTransTblBuilder::PhraseTransTblBuilder(string pRule, string pInvRule)
-    : m_rule(pRule), m_invrule(pInvRule)
+  //code for PhraseTransTblBuilder
+  PhraseTransTblBuilder::PhraseTransTblBuilder(string pRule
+    , string pInvRule
+    , string pOutput
+    , string pLex)
+    : m_rule(pRule)
+    , m_invrule(pInvRule)
+    , m_output(pOutput)
+    , m_plex(pLex)
   {}
 
-  void PhraseTransTblBuilder::BuildPhraseTransTbl()
+  bool PhraseTransTblBuilder::BuildPhraseTransTbl()
   {
     //read extracted rule table.
     ifstream fin1(m_rule);
     ifstream fin2(m_invrule);
-    string line1, line2;
+    ofstream fout(m_output);
+    ofstream fout1(m_output + ".s2t");
+    ofstream fout2(m_output + ".t2s");
 
     if (!fin1){
       cerr << "Cannot find rule table: " << m_rule
         << ". Please check input path." << endl;
+      return false;
     }
 
     if (!fin2){
       cerr << "Cannot find rule table: " << m_invrule
         << ". Please check input path." << endl;
+      return false;
     }
 
-    while (getline(fin1, line1)){
-      vector<string> tmpVec = BasicMethod::Split(line1, " ||| ");
+    if (!fout){
+      cerr << "Cannot create output file: " << m_output
+        << ". Please check output path." << endl;
+      return false;
+    }
+
+    //load lexical translation table
+    m_lex.LoadLexicalTable(m_plex);
+    BuildOneDirection(fin1, fout1);
+    cerr << "Finished: Source to target translation table" << endl;
+    BuildOneDirection(fin2, fout2);
+    cerr << "Finished: Taget to source translation table" << endl;
+    
+    fin1.close();
+    fin2.close();
+    fout1.close();
+    fout2.close();
+
+    fin1.open(m_output + ".s2t");
+    fin2.open(m_output + ".t2s");
+
+    MergeTable(fin1, fin2, fout);
+    cerr << "Finished: Merged translation table" << endl;
+
+    return true;
+  }
+
+  void PhraseTransTblBuilder::BuildOneDirection(ifstream &fin, ofstream &fout)
+  {
+    PhraseTable phraseTable = PhraseTable(m_lex, fout);
+    string line;
+    while (getline(fin, line)){
+      vector<string> tmpVec = BasicMethod::Split(line, " ||| ");
       if (tmpVec.size() != 3){
-        cerr << "Bad rule form detected:" << line1 << endl;
+        cerr << "Bad rule form detected:" << line << endl;
         continue;
       }
       PhraseTblEntry entry;
-      entry.CreatePhraseTblEntry(tmpVec[0], tmpVec[1]
-        , tmpVec[2]);
+      entry.CreatePhraseTblEntry(tmpVec[0], tmpVec[1], tmpVec[2]);
+      phraseTable.Insert(entry);
     }
   }
 
-  //code for phrase table
-  PhraseTable::PhraseTable() : m_size(0) {}
+  //!Merge the two directions of table and generate one united table
+  void PhraseTransTblBuilder::MergeTable(ifstream &fin1
+    , ifstream &fin2
+    , ofstream &fout)
+  {
+    string line;
+    struct phraseInfo{
+      string s2tscore;
+      string t2sscore;
+      string count;
+      string align;
+    };
 
-  /**Insert a rule into the phrase table
-  *The insert may cause the computation of phrase scores*/
+    map<string, map<string, phraseInfo> > table;
+
+    while (getline(fin1, line)){
+      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      phraseInfo info;
+      string src = tmp[0];
+      string tgt = tmp[1];
+      info.s2tscore = tmp[2];
+      info.count = tmp[3];
+      info.align = tmp[4];
+      if (table.count(src)){
+        table[src][tgt] = info;
+      }
+      else{
+        table[src] = map<string, phraseInfo>();
+        table[src][tgt] = info;
+      }
+    }
+    fin1.close();
+
+    while (getline(fin2, line)){
+      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      string src = tmp[1];
+      string tgt = tmp[0];
+      table[src][tgt].t2sscore = tmp[2];
+    }
+    fin2.close();
+
+    for (auto& p1 : table){
+      for (auto& p2 : p1.second){
+        //PhraseTable form: 
+        //src|||tgt|||pr(t|s), prlex(t|s), pr(s|t), prlex(s|t), bonus, reserved ||| frequency ||| align
+        fout << p1.first << " ||| " << p2.first << " ||| "
+          << p2.second.s2tscore << "  " << p2.second.t2sscore
+          << " " << "1 0" << " ||| " << p2.second.count
+          << " ||| " << p2.second.align << endl;
+      }      
+    }
+    fout.close();
+    //delete tmp phrase tables
+    //BasicMethod::Delete(m_output + ".s2t");
+    //BasicMethod::Delete(m_output + ".t2s");
+  }
+
+  //code for phrase table
+  PhraseTable::PhraseTable(LexicalTable &lexicalTbl
+    , ofstream &output)
+    : m_count(0)
+    , m_lexicalTbl(lexicalTbl)
+    , m_output(output)
+  {}
+
+  /**Insert a phrase pair into the phrase table. The phrase 
+  *table only holds phrase pairs that shares the same source. 
+  *If the insert entry has the same source with the phrase table, 
+  *the entry may either be inserted into the table or the scores 
+  *will be updated. If the insert phrase's source differs from the 
+  *table's source, we will calculate all the phrase translation
+  *probabilities in the table, and output the table to a tmp rule 
+  *file, clear the table, and insert the new rule.
+  *\param entry The PhraseTblEntry to be inserted.
+  */
   void PhraseTable::Insert(PhraseTblEntry &entry)
   {
-
+    if (m_count == 0){
+      entry.m_lexicalWgt = m_lexicalTbl.GetLexicalWeight(entry);
+      m_phraseTable.push_back(entry);
+      m_count++;
+      return;
+    }
+    //if current entry is identical to last entry in phrase table, 
+    //we just update the count.
+    if (entry.Equals(m_phraseTable[m_phraseTable.size() - 1])){
+      m_count++;
+      m_phraseTable[m_phraseTable.size() - 1].m_freq++;
+      return;
+    }
+    //only alignment differs
+    if (entry.m_srcphrase == m_phraseTable[m_phraseTable.size() - 1].m_srcphrase
+      && entry.m_tgtphrase == m_phraseTable[m_phraseTable.size() - 1].m_tgtphrase){
+      //here we just ignore.
+      //TODO: only preserve highest frequent alignment
+      m_count++;
+      m_phraseTable[m_phraseTable.size() - 1].m_freq++;
+      return;
+    }
+    if (entry.m_srcphrase == m_phraseTable[m_phraseTable.size() - 1].m_srcphrase){
+      entry.m_lexicalWgt = m_lexicalTbl.GetLexicalWeight(entry);
+      m_phraseTable.push_back(entry);
+      m_count++;
+      return;
+    }
+    //if source phrase differs from entries' source in phrase table
+    //we compute all scores and output the phrase table.
+    for (auto& entry : m_phraseTable){
+      //compute phrase translation weight and output the table to tmp file
+      //format: source phrase ||| target phrase ||| Pr(t|s) Prlex(t|s) ||| frquency ||| alignment
+      entry.m_phraseTransWgt = log((double)entry.m_freq / (double)m_count);
+      m_output << entry.m_srcphrase << " ||| " << entry.m_tgtphrase
+        << " ||| " << entry.m_phraseTransWgt << " " << entry.m_lexicalWgt
+        << " ||| " << entry.m_freq << " ||| " << entry.m_align 
+        << endl;
+    }
+    //clear phrase table
+    m_phraseTable.clear();
+    //insert the new entry
+    m_count = 1;
+    entry.m_lexicalWgt = m_lexicalTbl.GetLexicalWeight(entry);
+    m_phraseTable.push_back(entry);
   }
+
+
 }
