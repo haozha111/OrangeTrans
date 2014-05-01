@@ -83,6 +83,9 @@ namespace OrangeTraining
     m_srcphrase = srcPhrase;
     m_tgtphrase = tgtPhrase;
     m_align = align;
+    if (align == "####"){
+      return true;
+    }
     m_phraseTransWgt = 0;
     m_freq = 1;
     m_srcphraseVec = BasicMethod::Split(srcPhrase);

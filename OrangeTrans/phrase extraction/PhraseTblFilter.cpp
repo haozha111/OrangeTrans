@@ -50,7 +50,12 @@ namespace OrangeTraining
     string line;
     vector<pair<string, size_t> >buffer;
     string lastsource;
+    int lineNo = 1;
     while (getline(fin, line)){
+      if (lineNo % 10000 == 0){
+        cerr << "Processed " << lineNo << " lines." << endl;
+      }
+      lineNo++;
       vector<string> tmp = BasicMethod::Split(line, " ||| ");
       size_t freq = atoi(tmp[3].c_str());
       if (buffer.empty()){
@@ -62,7 +67,7 @@ namespace OrangeTraining
           buffer.push_back(make_pair(line, freq));
         }
         else{
-          sort(buffer.begin(), buffer.end(), &OrangeTraining::PhraseTblFilter::cmp);
+          sort(buffer.begin(), buffer.end(), cmp);
           for (int i = 0; i < buffer.size() && i < topK; ++i){
             fout << buffer[i].first << endl;
           }
@@ -73,7 +78,7 @@ namespace OrangeTraining
       }
     }
     //don't forget the left items in buffer
-    sort(buffer.begin(), buffer.end(), &OrangeTraining::PhraseTblFilter::cmp);
+    sort(buffer.begin(), buffer.end(), cmp);
     for (int i = 0; i < buffer.size() && i < topK; ++i){
       fout << buffer[i].first << endl;
     }

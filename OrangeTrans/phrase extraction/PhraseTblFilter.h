@@ -33,7 +33,7 @@ namespace OrangeTraining
   private:
     string m_pruletable;
     string m_output;
-    bool cmp(const pair<string, size_t> &a, const pair<string, size_t> &b);
+    static bool cmp(const pair<string, size_t> &a, const pair<string, size_t> &b);
   };
 }
 
