@@ -78,11 +78,11 @@ namespace OrangeTraining
     //add X ||| NULL or NULL ||| X
     if (options.includeNullAlign){
       for each (size_t pos in m_wordAlignment.GetSourceNullAligned()){
-        AddRule(PhrasePair(pos, pos, 1, 0, m_wordAlignment), true);
+        AddRule(PhrasePair(m_wordAlignment.GetSourcePhrase(pos, pos), "NULL"), true);
       }
 
       for each(size_t pos in m_wordAlignment.GetTargetNullAligned()){
-        AddRule(PhrasePair(1, 0, pos, pos, m_wordAlignment), true);
+        AddRule(PhrasePair("NULL", m_wordAlignment.GetTargetPhrase(pos, pos)), true);
       }
     }
     return true;

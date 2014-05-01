@@ -120,6 +120,7 @@
     <ClInclude Include="phrase extraction\Phrase.h" />
     <ClInclude Include="phrase extraction\PhraseExtractionPipeline.h" />
     <ClInclude Include="phrase extraction\PhraseExtractor.h" />
+    <ClInclude Include="phrase extraction\PhraseTblFilter.h" />
     <ClInclude Include="phrase extraction\PhraseTransTblBuilder.h" />
     <ClInclude Include="phrase extraction\WordAlignment.h" />
     <ClInclude Include="util\BasicMethod.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="phrase extraction\Phrase.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractionPipeline.cpp" />
     <ClCompile Include="phrase extraction\PhraseExtractor.cpp" />
+    <ClCompile Include="phrase extraction\PhraseTblFilter.cpp" />
     <ClCompile Include="phrase extraction\PhraseTransTblBuilder.cpp" />
     <ClCompile Include="phrase extraction\WordAlignment.cpp" />
     <ClCompile Include="util\BasicMethod.cpp" />

@@ -51,6 +51,9 @@
     <ClInclude Include="phrase extraction\PhraseTransTblBuilder.h">
       <Filter>Header Files\phrase extraction</Filter>
     </ClInclude>
+    <ClInclude Include="phrase extraction\PhraseTblFilter.h">
+      <Filter>Header Files\phrase extraction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util\BasicMethod.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
     <ClCompile Include="phrase extraction\PhraseTransTblBuilder.cpp">
+      <Filter>Source Files\phrase extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="phrase extraction\PhraseTblFilter.cpp">
       <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
   </ItemGroup>

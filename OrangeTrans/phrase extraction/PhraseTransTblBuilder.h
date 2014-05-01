@@ -95,18 +95,21 @@ namespace OrangeTraining
     PhraseTransTblBuilder(string pRule
       , string pInvRule
       , string pOutput
-      , string pLex);
+      , string pLexs2t
+      , string pLext2s);
    
     //method for building translation table
     bool BuildPhraseTransTbl();
   private:
-    void BuildOneDirection(ifstream &fin, ofstream &fout);
+    void BuildOneDirection(ifstream &fin, ofstream &fout, LexicalTable &lex);
     void MergeTable(ifstream &fin1, ifstream &fin2, ofstream &fout);
     string m_rule; //!reader for rule table.
     string m_invrule; //!reader for inverted rule table.
     string m_output;
-    string m_plex; //! path to lexical trans table
-    LexicalTable m_lex; //! the lexical trans table
+    string m_plexs2t; //! path to lexical trans table
+    string m_plext2s;
+    LexicalTable m_lexs2t; //! the lexical trans table
+    LexicalTable m_lext2s;
   };
 
 }

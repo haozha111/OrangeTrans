@@ -153,11 +153,13 @@ namespace OrangeTraining
   PhraseTransTblBuilder::PhraseTransTblBuilder(string pRule
     , string pInvRule
     , string pOutput
-    , string pLex)
+    , string pLexs2t
+    , string pLext2s)
     : m_rule(pRule)
     , m_invrule(pInvRule)
     , m_output(pOutput)
-    , m_plex(pLex)
+    , m_plexs2t(pLexs2t)
+    , m_plext2s(pLext2s)
   {}
 
   bool PhraseTransTblBuilder::BuildPhraseTransTbl()
@@ -188,10 +190,11 @@ namespace OrangeTraining
     }
 
     //load lexical translation table
-    m_lex.LoadLexicalTable(m_plex);
-    BuildOneDirection(fin1, fout1);
+    m_lexs2t.LoadLexicalTable(m_plexs2t);
+    m_lext2s.LoadLexicalTable(m_plext2s);
+    BuildOneDirection(fin1, fout1, m_lexs2t);
     cerr << "Finished: Source to target translation table" << endl;
-    BuildOneDirection(fin2, fout2);
+    BuildOneDirection(fin2, fout2, m_lext2s);
     cerr << "Finished: Taget to source translation table" << endl;
     
     fin1.close();
@@ -208,9 +211,10 @@ namespace OrangeTraining
     return true;
   }
 
-  void PhraseTransTblBuilder::BuildOneDirection(ifstream &fin, ofstream &fout)
+  void PhraseTransTblBuilder::BuildOneDirection(ifstream &fin, ofstream &fout, LexicalTable &lex)
   {
-    PhraseTable phraseTable = PhraseTable(m_lex, fout);
+
+    PhraseTable phraseTable = PhraseTable(lex, fout);
     string line;
     while (getline(fin, line)){
       vector<string> tmpVec = BasicMethod::Split(line, " ||| ");
@@ -222,6 +226,12 @@ namespace OrangeTraining
       entry.CreatePhraseTblEntry(tmpVec[0], tmpVec[1], tmpVec[2]);
       phraseTable.Insert(entry);
     }
+    //note that there are left unprocessed phrase pairs in phrase table
+    //we can insert a dummy phrasetblentry
+    PhraseTblEntry dummy;
+    string stop = "####";
+    dummy.CreatePhraseTblEntry(stop, stop, stop);
+    phraseTable.Insert(dummy);
   }
 
   //!Merge the two directions of table and generate one united table
@@ -277,8 +287,8 @@ namespace OrangeTraining
     }
     fout.close();
     //delete tmp phrase tables
-    //BasicMethod::Delete(m_output + ".s2t");
-    //BasicMethod::Delete(m_output + ".t2s");
+    BasicMethod::Delete(m_output + ".s2t");
+    BasicMethod::Delete(m_output + ".t2s");
   }
 
   //code for phrase table
@@ -342,6 +352,10 @@ namespace OrangeTraining
     }
     //clear phrase table
     m_phraseTable.clear();
+    // if we reach the end of phrase pairs
+    if (entry.m_align == "####"){
+      return;
+    }
     //insert the new entry
     m_count = 1;
     entry.m_lexicalWgt = m_lexicalTbl.GetLexicalWeight(entry);

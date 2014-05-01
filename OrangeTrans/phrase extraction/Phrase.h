@@ -25,7 +25,8 @@ namespace OrangeTraining
   public:
     PhrasePair(size_t srcStart, size_t srcEnd, size_t tgtStart, size_t tgtEnd
       , const WordAlignment &wordAlignment);
-
+    //constructor for null phrase pair
+    PhrasePair(string srcPhrase, string tgtPhrase);
     //method
 
     //atributes
@@ -51,16 +52,15 @@ namespace OrangeTraining
   //! The PhraseCollection class is to store the extracted phrase pairs
   class PhraseCollection{
   public:
-    PhraseCollection();
-    //! Add a new phrasePair to the collection
-
     //methods
-
+    //! Add a new phrasePair to the collection
     void AddPhrasePair(const PhrasePair & phrasePair, bool hasEmptyPhrase);
     //! print all rules in this collection to file
     void Write(std::ofstream &output, std::ofstream &outputinv) const;
-    //attributes
+    //! clear the phrase collection
+    void Clear();
 
+    //attributes
     size_t TotalRuleCount() const;
     size_t NullRuleCount() const;
   private:

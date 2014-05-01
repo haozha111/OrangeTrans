@@ -45,11 +45,12 @@ namespace OrangeTraining
     ofstream ruleOutput(m_ruleOuput.c_str());
     ofstream ruleInvOutput(m_ruleInvOutput.c_str());
 
+    PhraseCollection phraseCollection;
+
     while (getline(srcTrainset, srcline)
       && getline(tgtTrainset, tgtline)
       && getline(align, alignline)){
       //create a new word alignment
-      PhraseCollection phraseCollection;
       WordAlignment wordAlignment;
       wordAlignment.CreateAlignment(srcline, tgtline,
         alignline, sentenceID);
@@ -57,6 +58,7 @@ namespace OrangeTraining
       PhraseExtractor phraseExtractor = PhraseExtractor(wordAlignment, phraseCollection);
       phraseExtractor.ExtractPhrasePair(ruleOptions);
       phraseCollection.Write(ruleOutput, ruleInvOutput);
+      phraseCollection.Clear();
       sentenceID++;
       if (sentenceID % 1000 == 0){
         cerr << "Processed " << sentenceID << " lines." << endl;
@@ -68,6 +70,10 @@ namespace OrangeTraining
     ruleOutput.close();
     ruleInvOutput.close();
 
+    cerr << "Total number of phrase pair extracted: "
+      << phraseCollection.TotalRuleCount() << endl;
+    cerr << "Number of null phrase pair extracted: "
+      << phraseCollection.NullRuleCount() << endl;
     //sort the rule table for phrase table generation phase
     BasicMethod::Sort(m_ruleOuput);
     BasicMethod::Sort(m_ruleInvOutput);

@@ -27,13 +27,23 @@ namespace OrangeTraining
     //add alignment info
     for (size_t k = tgtStart; k <= tgtEnd; ++k){
       for (auto& align : wordAlignment.GetTargetAlign(k)){
-        m_alignInfo.push_back(make_pair(k - tgtStart, align - srcStart));
+        if (align >= srcStart && align <= srcEnd){
+          m_alignInfo.push_back(make_pair(align - srcStart, k - tgtStart));
+        }
       }
     }
     //add phrase string
     m_srcPhrase = wordAlignment.GetSourcePhrase(srcStart, srcEnd);
     m_tgtPhrase = wordAlignment.GetTargetPhrase(tgtStart, tgtEnd);
 
+  }
+
+  //constructor for null phrase pair
+  PhrasePair::PhrasePair(string srcPhrase, string tgtPhrase)
+  {
+    m_srcPhrase = srcPhrase;
+    m_tgtPhrase = tgtPhrase;
+    m_alignInfo.push_back(make_pair(0, 0));
   }
 
   size_t PhrasePair::SourceStart() const
@@ -72,10 +82,6 @@ namespace OrangeTraining
   }
 
   //PhraseCollection code
-
-  PhraseCollection::PhraseCollection(){}
-
-
   void PhraseCollection::AddPhrasePair(const PhrasePair &phrasePair, bool hasEmptyPhrase)
   {
     m_phraseCollection.push_back(phrasePair);
@@ -91,14 +97,18 @@ namespace OrangeTraining
       output << rule.SourcePhrase() << " ||| " << rule.TargetPhrase() << " |||";
       outputinv << rule.TargetPhrase() << " ||| " << rule.SourcePhrase() << " |||";
       for (pair<size_t, size_t> align : rule.AlignInfo()){
-        output << " " << align.second << "-" << align.first;
-        outputinv << " " << align.first << "-" << align.second;
+        output << " " << align.first << "-" << align.second;
+        outputinv << " " << align.second << "-" << align.first;
       }
       output << endl;
       outputinv << endl;
     }
   }
 
+  void PhraseCollection::Clear()
+  {
+    m_phraseCollection.clear();
+  }
 
   size_t PhraseCollection::TotalRuleCount() const
   {

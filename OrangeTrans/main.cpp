@@ -18,7 +18,7 @@
 #include "phrase extraction\LexicalTransPipeline.h";
 #include "phrase extraction\PhraseTransTblBuilder.h";
 #include "phrase extraction\PhraseTransTblBuilder.h";
-
+#include "phrase extraction\PhraseTblFilter.h";
 using namespace std;
 
 void main(int argc, char* argv[])
@@ -42,9 +42,13 @@ void main(int argc, char* argv[])
 
   string r1 = "C:\\Users\\v-haozha\\Desktop\\NiuTrans_1.3.0_CWMT2013\\work\\extract\\extract.sorted";
   string r2 = "C:\\Users\\v-haozha\\Desktop\\NiuTrans_1.3.0_CWMT2013\\work\\extract\\extract.inv.sorted";
-  string plex = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\s2t.lex";
+  string plexs2t = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\s2t.lex";
+  string plext2s = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\lex\\t2s.lex";
   string output = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\model\\phrasetable";
-  PhraseTransTblBuilder builder = PhraseTransTblBuilder(r1, r2, output, plex);
-  builder.BuildPhraseTransTbl();
+  //PhraseTransTblBuilder builder = PhraseTransTblBuilder(rule + ".sorted", ruleinv + ".sorted", output, plexs2t, plext2s);
+  //builder.BuildPhraseTransTbl();
+
+  PhraseTblFilter filter = PhraseTblFilter(rule + ".sorted", rule + ".sorted.pruned");
+  filter.Filter(30);
 }
 

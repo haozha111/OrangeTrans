@@ -143,14 +143,12 @@ namespace OrangeTraining
   string WordAlignment::GetSourcePhrase(size_t startPos, size_t endPos) const
   {
     if (startPos > endPos){
-      return "NULL";
+      return "";
     }
     if ((startPos < 0 || startPos >= m_srcSentence.size())
       || (endPos < 0 || endPos >= m_srcSentence.size())){
       throw exception("WordAlignment.GetSourceSubstring(size_t startPos, size_t endPos): index out of bounds!");
     }
-
-
     string src = "";
     for (size_t k = startPos; k <= endPos; ++k){
       src += m_srcSentence[k];
@@ -165,14 +163,12 @@ namespace OrangeTraining
   string WordAlignment::GetTargetPhrase(size_t startPos, size_t endPos) const
   {
     if (startPos > endPos){
-      return "NULL";
+      return "";
     }
-
     if ((startPos < 0 || startPos >= m_tgtSentence.size())
       || (endPos < 0 || endPos >= m_tgtSentence.size())){
       throw exception("WordAlignment.GetTargetSubstring(size_t startPos, size_t endPos): index out of bounds!");
     }
-
     string tgt = "";
     for (size_t k = startPos; k <= endPos; ++k){
       tgt += m_tgtSentence[k];
