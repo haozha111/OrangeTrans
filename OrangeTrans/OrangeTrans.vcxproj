@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="lexical reordering\msd.h" />
     <ClInclude Include="phrase extraction\LexicalTranslation.h" />
     <ClInclude Include="phrase extraction\LexicalTransPipeline.h" />
     <ClInclude Include="phrase extraction\Phrase.h" />
@@ -126,6 +127,7 @@
     <ClInclude Include="util\BasicMethod.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lexical reordering\msd.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="phrase extraction\LexicalTranslation.cpp" />
     <ClCompile Include="phrase extraction\LexicalTransPipeline.cpp" />

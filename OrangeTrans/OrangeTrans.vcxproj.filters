@@ -25,6 +25,12 @@
     <Filter Include="Source Files\phrase extraction">
       <UniqueIdentifier>{79fde8e3-013f-4524-9eb0-00985979b496}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\lexical reordering">
+      <UniqueIdentifier>{e81f0ee8-5c89-4ccc-b536-2b92dcda8f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lexical reordering">
+      <UniqueIdentifier>{37fe5a7e-3b28-4ed7-915e-1759d71c50ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="phrase extraction\Phrase.h">
@@ -53,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="phrase extraction\PhraseTblFilter.h">
       <Filter>Header Files\phrase extraction</Filter>
+    </ClInclude>
+    <ClInclude Include="lexical reordering\msd.h">
+      <Filter>Header Files\lexical reordering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="phrase extraction\PhraseTblFilter.cpp">
       <Filter>Source Files\phrase extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="lexical reordering\msd.cpp">
+      <Filter>Source Files\lexical reordering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
