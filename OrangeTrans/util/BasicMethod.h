@@ -36,6 +36,9 @@ namespace OrangeTrans
 
     //! delete the input file
     static void Delete(std::string &inputFile);
+
+    //! rename the input file
+    static void Rename(std::string &inputFile, std::string &outputFile);
   };
 }
 

@@ -69,5 +69,12 @@ namespace OrangeTrans
     string cmd = "del " + inputFile;
     system(cmd.c_str());
   }
+
+  /**Rename the input file using system command*/
+  void BasicMethod::Rename(string &inputFile,string &outputFile)
+  {
+    string cmd = "rename " + inputFile + " " + outputFile;
+    system(cmd.c_str());
+  }
 }
 

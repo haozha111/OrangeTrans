@@ -42,15 +42,15 @@ namespace OrangeTraining
     vector<vector<size_t> > m_align;
     vector<int> m_alnmin;
     vector<int> m_alnmax;
-    vector<vector<MSDPhrasePair> > m_ppstart;
-    vector<vector<MSDPhrasePair> > m_ppend;
+    vector<vector<MSDPhrasePair*> > m_ppstart;
+    vector<vector<MSDPhrasePair*> > m_ppend;
   };
 
   class MSD
   {
   public:
     MSD(const string &src, const string &tgt
-      , const string &aln);
+      , const string &aln, const string &outputPath);
     void TrainMSD();
   private:
     void ExtractPhrasePairs(SentnInfo &srcsen, SentnInfo &tgtsen);
@@ -59,9 +59,13 @@ namespace OrangeTraining
     void CalculateMSD(SentnInfo &srcsen, SentnInfo &tgtsen);
     void OutputMSDtemp(SentnInfo &tgtsen, ofstream &fout);
     bool ProcessLine();
+    bool Aggregate() const;
+    bool CalculateMSDProb() const;
     string m_src;
     string m_tgt;
     string m_aln;
+    string m_outputPath;
+    string m_tmpModel;
     static const int MaxExtractPhraLen = 7;
     size_t m_pDttl = 0;
     size_t m_pMttl = 0;
@@ -69,7 +73,7 @@ namespace OrangeTraining
     size_t m_nDttl = 0;
     size_t m_nMttl = 0;
     size_t m_nSttl = 0;
-    size_t tempPhrapairs = 0;
+    size_t m_tempPhrapairs = 0;
   };
 }
 

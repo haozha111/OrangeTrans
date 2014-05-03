@@ -19,6 +19,7 @@
 #include "phrase extraction\PhraseTransTblBuilder.h";
 #include "phrase extraction\PhraseTransTblBuilder.h";
 #include "phrase extraction\PhraseTblFilter.h";
+#include "lexical reordering\msd.h";
 using namespace std;
 
 void main(int argc, char* argv[])
@@ -48,7 +49,11 @@ void main(int argc, char* argv[])
   //PhraseTransTblBuilder builder = PhraseTransTblBuilder(rule + ".sorted", ruleinv + ".sorted", output, plexs2t, plext2s);
   //builder.BuildPhraseTransTbl();
 
-  PhraseTblFilter filter = PhraseTblFilter(rule + ".sorted", rule + ".sorted.pruned");
-  filter.Filter(30);
+  /*PhraseTblFilter filter = PhraseTblFilter(rule + ".sorted", rule + ".sorted.pruned");
+  filter.Filter(30);*/
+
+  string msdoutputPath = "C:\\Users\\v-haozha\\Desktop\\orange\\work\\model\\";
+  MSD reorderTrainer = MSD(src, tgt, align, msdoutputPath);
+  reorderTrainer.TrainMSD();
 }
 

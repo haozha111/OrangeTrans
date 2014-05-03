@@ -14,6 +14,7 @@
 #include "..\util\BasicMethod.h";
 #include <fstream>
 #include <iostream>
+#include <math.h>
 
 using namespace OrangeTrans;
 
@@ -37,11 +38,13 @@ namespace OrangeTraining
   void SentnInfo::InsertPhrase(string srcphra, string tgtphra
     , size_t fs, size_t fe, size_t es, size_t ee)
   {
-    MSDPhrasePair phrapair;
-    phrapair.m_srcphra = srcphra;
-    phrapair.m_tgtphra = tgtphra;
-    phrapair.m_fs = fs; phrapair.m_fe = fe;
-    phrapair.m_es = es; phrapair.m_ee = ee;
+    MSDPhrasePair* phrapair = new MSDPhrasePair();
+    phrapair->m_srcphra = srcphra;
+    phrapair->m_tgtphra = tgtphra;
+    phrapair->m_fs = fs; phrapair->m_fe = fe;
+    phrapair->m_es = es; phrapair->m_ee = ee;
+    phrapair->m_pm = 0; phrapair->m_ps = 0; phrapair->m_pd = 0;
+    phrapair->m_nm = 0; phrapair->m_ns = 0; phrapair->m_nd = 0;
     m_ppstart[es].push_back(phrapair);
     m_ppend[ee].push_back(phrapair);
   }
@@ -49,13 +52,35 @@ namespace OrangeTraining
   //code for MSD
   //! constructor for MSD reordering module
   MSD::MSD(const string &src, const string &tgt
-    , const string &aln) : m_src(src)
+    , const string &aln, const string &outputPath) 
+    : m_src(src)
     , m_tgt(tgt)
     , m_aln(aln)
+    , m_outputPath(outputPath)
+    , m_tmpModel(outputPath + "msd.reordering.model.1")
   {}
-  //
+  //! MSD model training pipeline
+  void MSD::TrainMSD()
+  {
+    ProcessLine();
+    //sort the output file
+    BasicMethod::Sort(m_tmpModel);
+    BasicMethod::Delete(m_tmpModel);
+    //combine results(aggregate M S D scores)
+    m_tmpModel += ".sorted";
+    Aggregate();
+    BasicMethod::Delete(m_tmpModel);
+    m_tmpModel += ".aggregated";
+    CalculateMSDProb();
+    BasicMethod::Delete(m_tmpModel);
+    m_tmpModel += ".final";
+    string tblname = "msd.reorder.table";
+    BasicMethod::Rename(m_tmpModel, tblname);
+    cerr << "MSD training over." << endl;
+  }
   bool MSD::ProcessLine()
   {
+    cerr << "MSD reordering Step1: generating msd.reordering.model.1" << endl;
     ifstream finsrc(m_src);
     ifstream fintgt(m_tgt);
     ifstream finaln(m_aln);
@@ -73,11 +98,19 @@ namespace OrangeTraining
       cerr << "Please check alignment file: " << m_aln << endl;
       return false;
     }
-
+    ofstream fout(m_tmpModel);
+    if (!fout){
+      cerr << "Couldn't create output file msd.reordering.model.1"
+        << endl;
+    }
     //start whole process
+    int lineNo = 1;
     while (getline(finsrc, srcline)
       && getline(fintgt, tgtline)
       && getline(finaln, alnline)){
+      if (lineNo % 10000 == 0){
+        cerr << "Processed " << lineNo << " lines." << endl;
+      }
       SentnInfo srcsen, tgtsen;
       srcsen.m_words = BasicMethod::Split(srcline);
       tgtsen.m_words = BasicMethod::Split(tgtline);
@@ -87,7 +120,8 @@ namespace OrangeTraining
       tgtsen.m_alnmax.assign(tgtsen.m_words.size(), -1);
       srcsen.m_alnmin.assign(srcsen.m_words.size(), -1);
       tgtsen.m_alnmin.assign(tgtsen.m_words.size(), -1);
-
+      tgtsen.m_ppstart.assign(tgtsen.m_words.size(), vector<MSDPhrasePair*>());
+      tgtsen.m_ppend.assign(tgtsen.m_words.size(), vector<MSDPhrasePair*>());
 
       for (auto& align : BasicMethod::Split(alnline))
       {
@@ -144,8 +178,88 @@ namespace OrangeTraining
       }
       ExtractPhrasePairs(srcsen, tgtsen);
       CalculateMSD(srcsen, tgtsen);
-      OutputMSDtemp(tgtsen, )
+      OutputMSDtemp(tgtsen, fout);
+      lineNo++;
     }
+    fout.close();
+    finsrc.close();
+    fintgt.close();
+    finaln.close();
+  }
+
+  bool MSD::Aggregate() const
+  {
+    ifstream fin(m_tmpModel);
+    if (!fin){
+      cerr << "Cannot find file msd.reordering.model.1.sorted" << endl;
+      return false;
+    }
+
+    ofstream fout(m_tmpModel + ".aggregated");
+    if (!fout){
+      cerr << "Cannot create aggregation file: " <<
+        m_tmpModel + ".arggregated" << endl;
+      return false;
+    }
+
+    cerr << "MSD reordering Step2: Aggregating MSD scores..." << endl;
+    string line, lastsrc = "", lasttgt = "";
+    size_t score[6] = {0};
+    vector<string> msdscore;
+    while (getline(fin, line)){
+      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      if (tmp.size() != 3){
+        cerr << "msd reordering table bad data: "
+          << line << endl;
+        continue;
+      }
+      if (lastsrc == "" && lasttgt == ""){
+        lastsrc = tmp[0]; lasttgt = tmp[1];
+        memset(score, 0, sizeof(score));
+        msdscore = BasicMethod::Split(tmp[2]);
+        for (int i = 0; i < 6; ++i){
+          score[i] = atoi(msdscore[i].c_str());
+        }
+      }
+      else{
+        if (tmp[0] == lastsrc && tmp[1] == lasttgt){
+          msdscore = BasicMethod::Split(tmp[2]);
+          for (int i = 0; i < 6; ++i){
+            score[i] += atoi(msdscore[i].c_str());
+          }
+        }
+        else{
+          //we now output the aggregation of previous pharse pair
+          fout << lastsrc << " ||| " << lasttgt << " ||| ";
+          for (int i = 0; i < 6; ++i){
+            if (i != 5){
+              fout << score[i] << " ";
+            }
+            else{
+              fout << score[i] << endl;
+            }
+          }
+          lastsrc = tmp[0]; lasttgt = tmp[1];
+          memset(score, 0, sizeof(score));
+          msdscore = BasicMethod::Split(tmp[2]);
+          for (int i = 0; i < 6; ++i){
+            score[i] = atoi(msdscore[i].c_str());
+          }
+        }
+      }
+    }
+    //output remaining items
+    fout << lastsrc << " ||| " << lasttgt << " ||| ";
+    for (int i = 0; i < 6; ++i){
+      if (i != 5){
+        fout << score[i] << " ";
+      }
+      else{
+        fout << score[i] << endl;
+      }
+    }
+    fout.close();
+    fin.close();
   }
 
   void MSD::ExtractPhrasePairsGivenSrc(SentnInfo &srcsen, SentnInfo &tgtsen
@@ -228,14 +342,14 @@ namespace OrangeTraining
     size_t preEend, nextEstart;
     for (int i = 0; i < tgtsen.m_words.size(); ++i){
       /*calculate previous MSD*/
-      for (MSDPhrasePair &phrapair : tgtsen.m_ppstart[i]){
+      for (MSDPhrasePair* phrapair : tgtsen.m_ppstart[i]){
         if (i == 0){
-          if (phrapair.m_fs != 0){
-            phrapair.m_pd = 1;
+          if (phrapair->m_fs != 0){
+            phrapair->m_pd = 1;
             m_pDttl++;
           }
           else{
-            phrapair.m_pm = 1;
+            phrapair->m_pm = 1;
             m_pMttl++;
           }
           continue;
@@ -244,35 +358,36 @@ namespace OrangeTraining
         bool flag = false;
         for (size_t aln : tgtsen.m_align[preEend]){
           //M
-          if (aln == phrapair.m_fs - 1){
-            phrapair.m_pm = 1;
+          if (aln == phrapair->m_fs - 1){
+            phrapair->m_pm = 1;
             m_pMttl++;
             flag = true;
             break;
           }
           //S
-          if (aln == phrapair.m_fe + 1){
-            phrapair.m_ps = 1;
+          if (aln == phrapair->m_fe + 1){
+            phrapair->m_ps = 1;
             m_pSttl++;
             flag = true;
             break;
           }
         }
+        //D
         if (!flag){
-          phrapair.m_pd = 1;
+          phrapair->m_pd = 1;
           m_pDttl++;
         }
       }
 
       //calculate next M,S,D
-      for (MSDPhrasePair &phrapair : tgtsen.m_ppend[i]){
+      for (MSDPhrasePair* phrapair : tgtsen.m_ppend[i]){
         if (i == tgtsen.m_words.size() - 1){
-          if (phrapair.m_fe == srcsen.m_words.size() - 1){
-            phrapair.m_nm = 1;
+          if (phrapair->m_fe == srcsen.m_words.size() - 1){
+            phrapair->m_nm = 1;
             m_nMttl++;
           }
           else{
-            phrapair.m_nd = 1;
+            phrapair->m_nd = 1;
             m_nDttl++;
           }
           continue;
@@ -281,45 +396,91 @@ namespace OrangeTraining
         bool flag = false;
         for (size_t aln : tgtsen.m_align[nextEstart]){
           //M
-          if (aln == phrapair.m_fe + 1){
-            phrapair.m_nm = 1;
+          if (aln == phrapair->m_fe + 1){
+            phrapair->m_nm = 1;
             m_nMttl++;
             flag = true;
             break;
           }
           //S
-          if (aln == phrapair.m_fs - 1){
-            phrapair.m_ns = 1;
+          if (aln == phrapair->m_fs - 1){
+            phrapair->m_ns = 1;
             m_nSttl++;
             flag = true;
             break;
           }
         }
+        //D
         if (!flag){
-          phrapair.m_nd = 1;
+          phrapair->m_nd = 1;
           m_nDttl++;
         }
       }
     }
   }
 
+  bool MSD::CalculateMSDProb() const
+  {
+    ifstream fin(m_tmpModel);
+    if (!fin){
+      cerr << "Cannot find file msd.reordering.model.1.sorted.aggregated" << endl;
+      return false;
+    }
+
+    ofstream fout(m_tmpModel + ".final");
+    if (!fout){
+      cerr << "Cannot create file: " <<
+        m_tmpModel + ".final" << endl;
+      return false;
+    }
+
+    cerr << "MSD reordering Step3: Calculating MSD probabilities..." << endl;
+    
+    //smoothing factor
+    double pmfactor = 0.5;
+    double psfactor = 0.5;
+    double pdfactor = 0.5;
+    double nmfactor = 0.5;
+    double nsfactor = 0.5;
+    double ndfactor = 0.5;
+
+    string line;
+    double pm, ps, pd, nm, ns, nd;
+    while (getline(fin, line)){
+      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      if (!sscanf_s(tmp[2].c_str(), "%lf %lf %lf %lf %lf %lf"
+        , &pm, &ps, &pd, &nm, &ns, &nd)){
+        cerr << "Bad data in MSD table, line: "
+          << line << endl;
+      }
+      double pttl = pm + pmfactor + ps + psfactor + pd + pdfactor;
+      double nttl = nm + nmfactor + ns + nsfactor + nd + ndfactor;
+      fout << tmp[0] << " ||| " << tmp[1] << " ||| "
+        << log((pm + pmfactor) / pttl) << " " << log((ps + psfactor) / pttl)
+        << " " << log((pd + pdfactor) / pttl) << " " << log((nm + nmfactor) / nttl)
+        << " " << log((ns + nsfactor) / nttl) << " " << log((nd + ndfactor) / nttl)
+        << endl;
+    }
+    fout.close();
+    fin.close();
+
+  }
+
   void MSD::OutputMSDtemp(SentnInfo &tgtsen, ofstream &fout)
   {
     for (size_t i = 0; i < tgtsen.m_words.size(); ++i){
-      for (MSDPhrasePair &phrapair : tgtsen.m_ppstart[i]){
-        if (phrapair.m_fe - phrapair.m_fs + 1 > MaxExtractPhraLen
-          || phrapair.m_ee - phrapair.m_es + 1 > MaxExtractPhraLen){
+      for (MSDPhrasePair* phrapair : tgtsen.m_ppstart[i]){
+        if (phrapair->m_fe - phrapair->m_fs + 1 > MaxExtractPhraLen
+          || phrapair->m_ee - phrapair->m_es + 1 > MaxExtractPhraLen){
           continue;
         }
-        tempPhrapairs++;
-        fout << phrapair.m_srcphra << " ||| " << phrapair.m_tgtphra
-          << " ||| " << phrapair.m_pm << " " << phrapair.m_ps << " "
-          << phrapair.m_pd << phrapair.m_nm << " " << phrapair.m_ns
-          << " " << phrapair.m_nd << endl;
+        m_tempPhrapairs++;
+        fout << phrapair->m_srcphra << " ||| " << phrapair->m_tgtphra
+          << " ||| " << phrapair->m_pm << " " << phrapair->m_ps << " "
+          << phrapair->m_pd << " " << phrapair->m_nm << " " << phrapair->m_ns
+          << " " << phrapair->m_nd << endl;
       }
     }
-
-    fout.close();
   }
 
 }
