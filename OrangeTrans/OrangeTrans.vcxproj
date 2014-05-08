@@ -115,6 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="decoder\Hypothesis.h" />
+    <ClInclude Include="decoder\HypothesisStack.h" />
+    <ClInclude Include="decoder\StackDecoder.h" />
     <ClInclude Include="lexical reordering\msd.h" />
     <ClInclude Include="phrase extraction\LexicalTranslation.h" />
     <ClInclude Include="phrase extraction\LexicalTransPipeline.h" />
@@ -124,9 +127,12 @@
     <ClInclude Include="phrase extraction\PhraseTblFilter.h" />
     <ClInclude Include="phrase extraction\PhraseTransTblBuilder.h" />
     <ClInclude Include="phrase extraction\WordAlignment.h" />
-    <ClInclude Include="util\BasicMethod.h" />
+    <ClInclude Include="util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="decoder\Hypothesis.cpp" />
+    <ClCompile Include="decoder\HypothesisStack.cpp" />
+    <ClCompile Include="decoder\StackDecoder.cpp" />
     <ClCompile Include="lexical reordering\msd.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="phrase extraction\LexicalTranslation.cpp" />
@@ -137,7 +143,7 @@
     <ClCompile Include="phrase extraction\PhraseTblFilter.cpp" />
     <ClCompile Include="phrase extraction\PhraseTransTblBuilder.cpp" />
     <ClCompile Include="phrase extraction\WordAlignment.cpp" />
-    <ClCompile Include="util\BasicMethod.cpp" />
+    <ClCompile Include="util\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

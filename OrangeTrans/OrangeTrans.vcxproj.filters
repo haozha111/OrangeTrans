@@ -31,6 +31,12 @@
     <Filter Include="Source Files\lexical reordering">
       <UniqueIdentifier>{37fe5a7e-3b28-4ed7-915e-1759d71c50ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\decoder">
+      <UniqueIdentifier>{2652aaab-bc3d-4b41-bcbf-7f5d73706262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\decoder">
+      <UniqueIdentifier>{ba6f0152-f998-409c-8a4d-aa8d07e9c560}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="phrase extraction\Phrase.h">
@@ -44,9 +50,6 @@
     </ClInclude>
     <ClInclude Include="phrase extraction\WordAlignment.h">
       <Filter>Header Files\phrase extraction</Filter>
-    </ClInclude>
-    <ClInclude Include="util\BasicMethod.h">
-      <Filter>Header Files\util</Filter>
     </ClInclude>
     <ClInclude Include="phrase extraction\LexicalTranslation.h">
       <Filter>Header Files\phrase extraction</Filter>
@@ -63,11 +66,20 @@
     <ClInclude Include="lexical reordering\msd.h">
       <Filter>Header Files\lexical reordering</Filter>
     </ClInclude>
+    <ClInclude Include="util\Utility.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\Hypothesis.h">
+      <Filter>Header Files\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\HypothesisStack.h">
+      <Filter>Header Files\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\StackDecoder.h">
+      <Filter>Header Files\decoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="util\BasicMethod.cpp">
-      <Filter>Source Files\util</Filter>
-    </ClCompile>
     <ClCompile Include="phrase extraction\Phrase.cpp">
       <Filter>Source Files\phrase extraction</Filter>
     </ClCompile>
@@ -97,6 +109,18 @@
     </ClCompile>
     <ClCompile Include="lexical reordering\msd.cpp">
       <Filter>Source Files\lexical reordering</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Utility.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\Hypothesis.cpp">
+      <Filter>Source Files\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\HypothesisStack.cpp">
+      <Filter>Source Files\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\StackDecoder.cpp">
+      <Filter>Source Files\decoder</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

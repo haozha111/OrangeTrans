@@ -75,11 +75,11 @@ namespace OrangeTraining
     cerr << "Number of null phrase pair extracted: "
       << phraseCollection.NullRuleCount() << endl;
     //sort the rule table for phrase table generation phase
-    BasicMethod::Sort(m_ruleOuput);
-    BasicMethod::Sort(m_ruleInvOutput);
+    Utility::Sort(m_ruleOuput);
+    Utility::Sort(m_ruleInvOutput);
     //delete old rule tables
-    BasicMethod::Delete(m_ruleOuput);
-    BasicMethod::Delete(m_ruleInvOutput);
+    Utility::Delete(m_ruleOuput);
+    Utility::Delete(m_ruleInvOutput);
     return true;
   }
 }

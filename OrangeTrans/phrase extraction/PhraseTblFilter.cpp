@@ -10,7 +10,7 @@
 *$Last Modified:
 **/
 #include "PhraseTblFilter.h";
-#include "..\util\BasicMethod.h";
+#include "..\util\Utility.h";
 #include <fstream>
 #include <map>
 #include <algorithm>
@@ -56,7 +56,7 @@ namespace OrangeTraining
         cerr << "Processed " << lineNo << " lines." << endl;
       }
       lineNo++;
-      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      vector<string> tmp = Utility::Split(line, " ||| ");
       size_t freq = atoi(tmp[3].c_str());
       if (buffer.empty()){
         buffer.push_back(make_pair(line, freq));

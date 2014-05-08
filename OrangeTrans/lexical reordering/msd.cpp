@@ -11,7 +11,7 @@
 **/
 
 #include "msd.h";
-#include "..\util\BasicMethod.h";
+#include "..\util\Utility.h";
 #include <fstream>
 #include <iostream>
 #include <math.h>
@@ -64,18 +64,18 @@ namespace OrangeTraining
   {
     ProcessLine();
     //sort the output file
-    BasicMethod::Sort(m_tmpModel);
-    BasicMethod::Delete(m_tmpModel);
+    Utility::Sort(m_tmpModel);
+    Utility::Delete(m_tmpModel);
     //combine results(aggregate M S D scores)
     m_tmpModel += ".sorted";
     Aggregate();
-    BasicMethod::Delete(m_tmpModel);
+    Utility::Delete(m_tmpModel);
     m_tmpModel += ".aggregated";
     CalculateMSDProb();
-    BasicMethod::Delete(m_tmpModel);
+    Utility::Delete(m_tmpModel);
     m_tmpModel += ".final";
     string tblname = "msd.reorder.table";
-    BasicMethod::Rename(m_tmpModel, tblname);
+    Utility::Rename(m_tmpModel, tblname);
     cerr << "MSD training over." << endl;
   }
   bool MSD::ProcessLine()
@@ -112,8 +112,8 @@ namespace OrangeTraining
         cerr << "Processed " << lineNo << " lines." << endl;
       }
       SentnInfo srcsen, tgtsen;
-      srcsen.m_words = BasicMethod::Split(srcline);
-      tgtsen.m_words = BasicMethod::Split(tgtline);
+      srcsen.m_words = Utility::Split(srcline);
+      tgtsen.m_words = Utility::Split(tgtline);
       srcsen.m_align.assign(srcsen.m_words.size(), vector<size_t>());
       tgtsen.m_align.assign(tgtsen.m_words.size(), vector<size_t>());
       srcsen.m_alnmax.assign(srcsen.m_words.size(), -1);
@@ -123,7 +123,7 @@ namespace OrangeTraining
       tgtsen.m_ppstart.assign(tgtsen.m_words.size(), vector<MSDPhrasePair*>());
       tgtsen.m_ppend.assign(tgtsen.m_words.size(), vector<MSDPhrasePair*>());
 
-      for (auto& align : BasicMethod::Split(alnline))
+      for (auto& align : Utility::Split(alnline))
       {
         unsigned int srcWordId, tgtWordId;
         //check aligment format
@@ -207,7 +207,7 @@ namespace OrangeTraining
     size_t score[6] = {0};
     vector<string> msdscore;
     while (getline(fin, line)){
-      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      vector<string> tmp = Utility::Split(line, " ||| ");
       if (tmp.size() != 3){
         cerr << "msd reordering table bad data: "
           << line << endl;
@@ -216,14 +216,14 @@ namespace OrangeTraining
       if (lastsrc == "" && lasttgt == ""){
         lastsrc = tmp[0]; lasttgt = tmp[1];
         memset(score, 0, sizeof(score));
-        msdscore = BasicMethod::Split(tmp[2]);
+        msdscore = Utility::Split(tmp[2]);
         for (int i = 0; i < 6; ++i){
           score[i] = atoi(msdscore[i].c_str());
         }
       }
       else{
         if (tmp[0] == lastsrc && tmp[1] == lasttgt){
-          msdscore = BasicMethod::Split(tmp[2]);
+          msdscore = Utility::Split(tmp[2]);
           for (int i = 0; i < 6; ++i){
             score[i] += atoi(msdscore[i].c_str());
           }
@@ -241,7 +241,7 @@ namespace OrangeTraining
           }
           lastsrc = tmp[0]; lasttgt = tmp[1];
           memset(score, 0, sizeof(score));
-          msdscore = BasicMethod::Split(tmp[2]);
+          msdscore = Utility::Split(tmp[2]);
           for (int i = 0; i < 6; ++i){
             score[i] = atoi(msdscore[i].c_str());
           }
@@ -447,7 +447,7 @@ namespace OrangeTraining
     string line;
     double pm, ps, pd, nm, ns, nd;
     while (getline(fin, line)){
-      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      vector<string> tmp = Utility::Split(line, " ||| ");
       if (!sscanf_s(tmp[2].c_str(), "%lf %lf %lf %lf %lf %lf"
         , &pm, &ps, &pd, &nm, &ns, &nd)){
         cerr << "Bad data in MSD table, line: "

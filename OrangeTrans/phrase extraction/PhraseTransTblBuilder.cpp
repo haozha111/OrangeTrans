@@ -13,7 +13,7 @@ the input word alignment.
 **/
 
 #include "PhraseTransTblBuilder.h";
-#include "..\util\BasicMethod.h";
+#include "..\util\Utility.h";
 #include <math.h>
 
 namespace OrangeTraining
@@ -33,7 +33,7 @@ namespace OrangeTraining
     //read lexical table
     string line;
     while (getline(fin, line)){
-      vector<string> tmpVec = BasicMethod::Split(line);
+      vector<string> tmpVec = Utility::Split(line);
       if (tmpVec.size() != 3){
         cerr << "WARNING: lexicon entry: " << line << " is bad data." << endl;
         continue;
@@ -88,14 +88,14 @@ namespace OrangeTraining
     }
     m_phraseTransWgt = 0;
     m_freq = 1;
-    m_srcphraseVec = BasicMethod::Split(srcPhrase);
-    m_tgtphraseVec = BasicMethod::Split(tgtPhrase);
+    m_srcphraseVec = Utility::Split(srcPhrase);
+    m_tgtphraseVec = Utility::Split(tgtPhrase);
     m_srclen = m_srcphraseVec.size();
     m_tgtlen = m_tgtphraseVec.size();
     m_alignedToSrc.assign(m_srclen, vector<size_t>());
     m_alignedToTgt.assign(m_tgtlen, vector<size_t>());
     //init alignment of phrase
-    vector<string> tmpVec = BasicMethod::Split(align);
+    vector<string> tmpVec = Utility::Split(align);
     unsigned int srcWordId, tgtWordId;
     for (auto &aln : tmpVec){
       if (!sscanf_s(aln.c_str(), "%d-%d", &srcWordId, &tgtWordId)){
@@ -220,7 +220,7 @@ namespace OrangeTraining
     PhraseTable phraseTable = PhraseTable(lex, fout);
     string line;
     while (getline(fin, line)){
-      vector<string> tmpVec = BasicMethod::Split(line, " ||| ");
+      vector<string> tmpVec = Utility::Split(line, " ||| ");
       if (tmpVec.size() != 3){
         cerr << "Bad rule form detected:" << line << endl;
         continue;
@@ -253,7 +253,7 @@ namespace OrangeTraining
     map<string, map<string, phraseInfo> > table;
 
     while (getline(fin1, line)){
-      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      vector<string> tmp = Utility::Split(line, " ||| ");
       phraseInfo info;
       string src = tmp[0];
       string tgt = tmp[1];
@@ -271,7 +271,7 @@ namespace OrangeTraining
     fin1.close();
 
     while (getline(fin2, line)){
-      vector<string> tmp = BasicMethod::Split(line, " ||| ");
+      vector<string> tmp = Utility::Split(line, " ||| ");
       string src = tmp[1];
       string tgt = tmp[0];
       table[src][tgt].t2sscore = tmp[2];
@@ -290,8 +290,8 @@ namespace OrangeTraining
     }
     fout.close();
     //delete tmp phrase tables
-    BasicMethod::Delete(m_output + ".s2t");
-    BasicMethod::Delete(m_output + ".t2s");
+    Utility::Delete(m_output + ".s2t");
+    Utility::Delete(m_output + ".t2s");
   }
 
   //code for phrase table

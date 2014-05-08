@@ -11,7 +11,7 @@
 **/
 
 #include "LexicalTranslation.h";
-#include "..\util\BasicMethod.h";
+#include "..\util\Utility.h";
 
 namespace OrangeTraining
 {
@@ -45,9 +45,9 @@ namespace OrangeTraining
 
       using namespace OrangeTrans;
 
-      vector<string> tmpVec = BasicMethod::Split(alignline);
-      vector<string> srcVec = BasicMethod::Split(srcline);
-      vector<string> tgtVec = BasicMethod::Split(tgtline);
+      vector<string> tmpVec = Utility::Split(alignline);
+      vector<string> srcVec = Utility::Split(srcline);
+      vector<string> tgtVec = Utility::Split(tgtline);
       vector<size_t> srcAlignCount(srcVec.size(), 0);
       vector<size_t> tgtAlignCount(tgtVec.size(), 0);
 

@@ -11,7 +11,7 @@
 **/
 
 #include "WordAlignment.h";
-#include "..\util\BasicMethod.h";
+#include "..\util\Utility.h";
 #include <iostream>;
 
 using namespace OrangeTrans;
@@ -43,13 +43,13 @@ namespace OrangeTraining
         << " WARNING: EMPTY alignment detected: " << sentenceID << " line in alignment file." << endl;
     }
 
-    m_srcSentence = BasicMethod::Split(srcSentence);
-    m_tgtSentence = BasicMethod::Split(tgtSentence);
+    m_srcSentence = Utility::Split(srcSentence);
+    m_tgtSentence = Utility::Split(tgtSentence);
     m_sentenceID = sentenceID;
     m_srcLength = m_srcSentence.size();
     m_tgtLength = m_tgtSentence.size();
 
-    vector<string> tmpVec = BasicMethod::Split(alignment);
+    vector<string> tmpVec = Utility::Split(alignment);
     size_t srclen = m_srcSentence.size();
     size_t tgtlen = m_tgtSentence.size();
 
