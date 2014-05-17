@@ -117,8 +117,14 @@
   <ItemGroup>
     <ClInclude Include="decoder\Hypothesis.h" />
     <ClInclude Include="decoder\HypothesisStack.h" />
+    <ClInclude Include="decoder\PhraseTable.h" />
     <ClInclude Include="decoder\StackDecoder.h" />
+    <ClInclude Include="decoder\trie.h" />
     <ClInclude Include="lexical reordering\msd.h" />
+    <ClInclude Include="lm\AbsoluteDiscounting.h" />
+    <ClInclude Include="lm\GlobalFun.h" />
+    <ClInclude Include="lm\KnerserNeyBackOff.h" />
+    <ClInclude Include="lm\WordMap.h" />
     <ClInclude Include="phrase extraction\LexicalTranslation.h" />
     <ClInclude Include="phrase extraction\LexicalTransPipeline.h" />
     <ClInclude Include="phrase extraction\Phrase.h" />
@@ -132,8 +138,14 @@
   <ItemGroup>
     <ClCompile Include="decoder\Hypothesis.cpp" />
     <ClCompile Include="decoder\HypothesisStack.cpp" />
+    <ClCompile Include="decoder\PhraseTable.cpp" />
     <ClCompile Include="decoder\StackDecoder.cpp" />
+    <ClCompile Include="decoder\trie.cpp" />
     <ClCompile Include="lexical reordering\msd.cpp" />
+    <ClCompile Include="lm\AbsoluteDiscounting.cpp" />
+    <ClCompile Include="lm\GlobalFun.cpp" />
+    <ClCompile Include="lm\KnerserNeyBackOff.cpp" />
+    <ClCompile Include="lm\WordMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="phrase extraction\LexicalTranslation.cpp" />
     <ClCompile Include="phrase extraction\LexicalTransPipeline.cpp" />

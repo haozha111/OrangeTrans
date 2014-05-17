@@ -10,8 +10,8 @@
 *$Last Modified:
 **/
 
-#include "msd.h";
-#include "..\util\Utility.h";
+#include "msd.h"
+#include "..\util\Utility.h"
 #include <fstream>
 #include <iostream>
 #include <math.h>

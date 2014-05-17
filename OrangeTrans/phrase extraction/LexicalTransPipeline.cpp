@@ -10,8 +10,8 @@
 *$Last Modified:
 **/
 
-#include "LexicalTransPipeline.h";
-#include "LexicalTranslation.h";
+#include "LexicalTransPipeline.h"
+#include "LexicalTranslation.h"
 
 #include <iostream>
 

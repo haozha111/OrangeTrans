@@ -32,10 +32,16 @@
       <UniqueIdentifier>{37fe5a7e-3b28-4ed7-915e-1759d71c50ef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\decoder">
-      <UniqueIdentifier>{2652aaab-bc3d-4b41-bcbf-7f5d73706262}</UniqueIdentifier>
+      <UniqueIdentifier>{eae57a9e-c5d4-4e61-8a44-6c7a447af5f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\decoder">
-      <UniqueIdentifier>{ba6f0152-f998-409c-8a4d-aa8d07e9c560}</UniqueIdentifier>
+      <UniqueIdentifier>{b6dfa75b-3703-4496-9745-0ab06125a483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\lm">
+      <UniqueIdentifier>{301ce30c-f157-4c42-8e58-ba04bca2fef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lm">
+      <UniqueIdentifier>{872d270e-d78b-44a2-a0c2-a9c2e1d038e2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +83,24 @@
     </ClInclude>
     <ClInclude Include="decoder\StackDecoder.h">
       <Filter>Header Files\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\trie.h">
+      <Filter>Header Files\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\PhraseTable.h">
+      <Filter>Header Files\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="lm\AbsoluteDiscounting.h">
+      <Filter>Header Files\lm</Filter>
+    </ClInclude>
+    <ClInclude Include="lm\GlobalFun.h">
+      <Filter>Header Files\lm</Filter>
+    </ClInclude>
+    <ClInclude Include="lm\KnerserNeyBackOff.h">
+      <Filter>Header Files\lm</Filter>
+    </ClInclude>
+    <ClInclude Include="lm\WordMap.h">
+      <Filter>Header Files\lm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +145,24 @@
     </ClCompile>
     <ClCompile Include="decoder\StackDecoder.cpp">
       <Filter>Source Files\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\trie.cpp">
+      <Filter>Source Files\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\PhraseTable.cpp">
+      <Filter>Source Files\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="lm\AbsoluteDiscounting.cpp">
+      <Filter>Source Files\lm</Filter>
+    </ClCompile>
+    <ClCompile Include="lm\GlobalFun.cpp">
+      <Filter>Source Files\lm</Filter>
+    </ClCompile>
+    <ClCompile Include="lm\KnerserNeyBackOff.cpp">
+      <Filter>Source Files\lm</Filter>
+    </ClCompile>
+    <ClCompile Include="lm\WordMap.cpp">
+      <Filter>Source Files\lm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

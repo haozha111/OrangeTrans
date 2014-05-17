@@ -10,8 +10,8 @@
 *$Last Modified:
 **/
 
-#include "LexicalTranslation.h";
-#include "..\util\Utility.h";
+#include "LexicalTranslation.h"
+#include "..\util\Utility.h"
 
 namespace OrangeTraining
 {

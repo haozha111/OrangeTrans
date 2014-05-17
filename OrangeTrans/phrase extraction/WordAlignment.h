@@ -14,7 +14,7 @@
 #ifndef WORD_ALIGNMENT_H_INCLUDED_
 #define WORD_ALIGNMENT_H_INCLUDED_
 
-#include "..\util\Utility.h";
+#include "..\util\Utility.h"
 #include <string>
 #include <vector>
 

@@ -12,8 +12,8 @@ the input word alignment.
 *$Last Modified:
 **/
 
-#include "PhraseTransTblBuilder.h";
-#include "..\util\Utility.h";
+#include "PhraseTransTblBuilder.h"
+#include "..\util\Utility.h"
 #include <math.h>
 
 namespace OrangeTraining
@@ -192,6 +192,7 @@ namespace OrangeTraining
       return false;
     }
 
+    cerr << "Start building phrase translation table..." << endl;
     //load lexical translation table
     m_lexs2t.LoadLexicalTable(m_plexs2t);
     m_lext2s.LoadLexicalTable(m_plext2s);

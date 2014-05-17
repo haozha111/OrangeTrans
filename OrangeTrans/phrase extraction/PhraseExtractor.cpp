@@ -11,7 +11,7 @@ the input word alignment.
 *Haoliang Zhang(A30041839@gmail.com)
 *$Last Modified:
 **/
-#include "PhraseExtractor.h";
+#include "PhraseExtractor.h"
 
 using namespace std;
 
@@ -66,7 +66,7 @@ namespace OrangeTraining
         for (size_t k = tgtstart; k <= tgtend; ++k){
           for (auto& align : m_wordAlignment.GetTargetAlign(k)){
             srcStartPos = (align < srcStartPos) ? align : srcStartPos;
-            srcEndPos = (align > srcStartPos) ? align : srcStartPos;
+            srcEndPos = (align > srcEndPos) ? align : srcEndPos;
           }
         }
 

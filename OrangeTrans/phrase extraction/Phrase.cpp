@@ -10,7 +10,7 @@
 *$Last Modified:
 **/
 
-#include "Phrase.h";
+#include "Phrase.h"
 
 using namespace std;
 

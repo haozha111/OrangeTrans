@@ -12,9 +12,9 @@
 
 #include <iostream>
 #include <ctime>
-#include "PhraseExtractionPipeline.h";
-#include "PhraseExtractor.h";
-#include "Phrase.h";
+#include "PhraseExtractionPipeline.h"
+#include "PhraseExtractor.h"
+#include "Phrase.h"
 
 using namespace std;
 
@@ -44,6 +44,8 @@ namespace OrangeTraining
     ifstream align(m_align.c_str());
     ofstream ruleOutput(m_ruleOuput.c_str());
     ofstream ruleInvOutput(m_ruleInvOutput.c_str());
+
+    cerr << "Start phrase extraction..." << endl;
 
     PhraseCollection phraseCollection;
 

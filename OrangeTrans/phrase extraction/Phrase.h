@@ -16,7 +16,7 @@
 
 #include <fstream>
 #include <vector>
-#include "WordAlignment.h";
+#include "WordAlignment.h"
 
 namespace OrangeTraining
 {

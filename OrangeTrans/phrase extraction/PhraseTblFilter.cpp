@@ -9,8 +9,8 @@
 *Haoliang Zhang(A30041839@gmail.com)
 *$Last Modified:
 **/
-#include "PhraseTblFilter.h";
-#include "..\util\Utility.h";
+#include "PhraseTblFilter.h"
+#include "..\util\Utility.h"
 #include <fstream>
 #include <map>
 #include <algorithm>
@@ -47,6 +47,9 @@ namespace OrangeTraining
       cerr << "Could not create " << m_output << endl;
       return;
     }
+
+    cerr << "Start filtering phrase translation table..." << endl;
+
     string line;
     vector<pair<string, size_t> >buffer;
     string lastsource;
@@ -85,5 +88,7 @@ namespace OrangeTraining
     buffer.clear();
     fin.close();
     fout.close();
+
+    cerr << "Finished filtering phrase translation table." << endl;
   }
 }

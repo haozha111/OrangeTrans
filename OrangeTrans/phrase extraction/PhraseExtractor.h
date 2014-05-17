@@ -20,8 +20,8 @@ the input word alignment.
 #include <string>
 #include <fstream>
 
-#include "WordAlignment.h";
-#include "Phrase.h";
+#include "WordAlignment.h"
+#include "Phrase.h"
 
 namespace OrangeTraining
 {

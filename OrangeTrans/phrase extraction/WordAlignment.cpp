@@ -10,9 +10,9 @@
 *$Last Modified:
 **/
 
-#include "WordAlignment.h";
-#include "..\util\Utility.h";
-#include <iostream>;
+#include "WordAlignment.h"
+#include "..\util\Utility.h"
+#include <iostream>
 
 using namespace OrangeTrans;
 

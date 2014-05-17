@@ -10,7 +10,7 @@
 *$Last Modified:
 **/
 
-#include "Utility.h";
+#include "Utility.h"
 #include <sstream>
 
 using namespace std;
